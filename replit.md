@@ -4,7 +4,7 @@
 A premium, modern, animated multi-page website for Kerala Economic Forum - a statewide non-profit empowering entrepreneurs, students, startups, and institutions in Kerala. Built with React, TypeScript, and Tailwind CSS featuring GSAP-inspired scroll animations, glassmorphism effects, and a startup-style premium design.
 
 ## Current State
-Frontend prototype completed with all 10 pages:
+Frontend prototype completed with all 10 pages plus authentication:
 - Home (Hero, Programs, Events, Testimonials, Partners, CTA)
 - About Us (Mission, Vision, Leadership)
 - Programs (Filterable program grid with detail view)
@@ -15,6 +15,18 @@ Frontend prototype completed with all 10 pages:
 - Contact (Form with validation)
 - Startup Support (Services, Accelerator journey, FAQs)
 - Campus Initiatives (Student programs, colleges, success stories)
+- Login (Email/password + Google OAuth)
+- Signup (Full name, email/password + Google OAuth)
+- Dashboard (Protected, personalized user dashboard)
+
+## Authentication
+- **Provider**: Supabase Auth
+- **Methods**: Email/password, Google OAuth
+- **Features**: User metadata (full_name), session management, protected routes
+- **Files**: 
+  - `client/src/lib/supabaseClient.ts` - Supabase client
+  - `client/src/hooks/useAuth.tsx` - Auth context and hooks
+  - `client/src/pages/Login.tsx`, `Signup.tsx`, `Dashboard.tsx` - Auth pages
 
 ## Brand Colors
 - Soft Red: #E46E6E (HSL: 0 72% 66%)
