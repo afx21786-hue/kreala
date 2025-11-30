@@ -5,14 +5,17 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
+import { Separator } from '../components/ui/separator';
 import { useToast } from '../hooks/use-toast';
 import { KEFLogo } from '../components/KEFLogo';
+import { SiGoogle } from 'react-icons/si';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const { signIn, signInWithGoogle } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
@@ -88,18 +91,52 @@ export default function Login() {
             <Button 
               type="submit" 
               className="w-full bg-[#E46E6E] hover:bg-[#d55b5b]"
-              disabled={loading}
+              disabled={loading || googleLoading}
+              data-testid="button-login"
             >
               {loading ? 'Signing in...' : 'Login'}
             </Button>
-            <p className="text-sm text-center text-muted-foreground">
-              Don't have an account?{' '}
-              <Link href="/signup" className="text-[#6EC9C6] hover:underline font-medium">
-                Sign up
-              </Link>
-            </p>
           </CardFooter>
         </form>
+        
+        <div className="px-6 pb-6">
+          <div className="relative my-4">
+            <Separator />
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-xs text-muted-foreground">
+              OR
+            </span>
+          </div>
+          
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full gap-2"
+            disabled={loading || googleLoading}
+            onClick={async () => {
+              setGoogleLoading(true);
+              const { error } = await signInWithGoogle();
+              if (error) {
+                toast({
+                  title: "Google Login Failed",
+                  description: error.message || "Could not sign in with Google",
+                  variant: "destructive",
+                });
+                setGoogleLoading(false);
+              }
+            }}
+            data-testid="button-google-login"
+          >
+            <SiGoogle className="w-4 h-4" />
+            {googleLoading ? 'Redirecting...' : 'Continue with Google'}
+          </Button>
+          
+          <p className="text-sm text-center text-muted-foreground mt-4">
+            Don't have an account?{' '}
+            <Link href="/signup" className="text-[#6EC9C6] hover:underline font-medium">
+              Sign up
+            </Link>
+          </p>
+        </div>
       </Card>
     </div>
   );

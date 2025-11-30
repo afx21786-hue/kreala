@@ -5,8 +5,10 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
+import { Separator } from '../components/ui/separator';
 import { useToast } from '../hooks/use-toast';
 import { KEFLogo } from '../components/KEFLogo';
+import { SiGoogle } from 'react-icons/si';
 
 export default function Signup() {
   const [name, setName] = useState('');
@@ -14,7 +16,8 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signUp } = useAuth();
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const { signUp, signInWithGoogle } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
@@ -132,18 +135,52 @@ export default function Signup() {
             <Button 
               type="submit" 
               className="w-full bg-[#E46E6E] hover:bg-[#d55b5b]"
-              disabled={loading}
+              disabled={loading || googleLoading}
+              data-testid="button-signup"
             >
               {loading ? 'Creating Account...' : 'Sign Up'}
             </Button>
-            <p className="text-sm text-center text-muted-foreground">
-              Already have an account?{' '}
-              <Link href="/login" className="text-[#6EC9C6] hover:underline font-medium">
-                Login
-              </Link>
-            </p>
           </CardFooter>
         </form>
+        
+        <div className="px-6 pb-6">
+          <div className="relative my-4">
+            <Separator />
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-xs text-muted-foreground">
+              OR
+            </span>
+          </div>
+          
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full gap-2"
+            disabled={loading || googleLoading}
+            onClick={async () => {
+              setGoogleLoading(true);
+              const { error } = await signInWithGoogle();
+              if (error) {
+                toast({
+                  title: "Google Sign Up Failed",
+                  description: error.message || "Could not sign up with Google",
+                  variant: "destructive",
+                });
+                setGoogleLoading(false);
+              }
+            }}
+            data-testid="button-google-signup"
+          >
+            <SiGoogle className="w-4 h-4" />
+            {googleLoading ? 'Redirecting...' : 'Continue with Google'}
+          </Button>
+          
+          <p className="text-sm text-center text-muted-foreground mt-4">
+            Already have an account?{' '}
+            <Link href="/login" className="text-[#6EC9C6] hover:underline font-medium">
+              Login
+            </Link>
+          </p>
+        </div>
       </Card>
     </div>
   );
