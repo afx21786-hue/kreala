@@ -12,11 +12,8 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
-
-  // Get redirect URL from query params, default to home
-  const redirectUrl = new URLSearchParams(location.includes('?') ? location.split('?')[1] : '').get('redirect') || '/';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +48,7 @@ export default function Login() {
         title: "Welcome back!",
         description: "You have successfully logged in.",
       });
-      setLocation(redirectUrl);
+      setLocation('/dashboard');
     } catch (error: any) {
       toast({
         title: "Login Failed",

@@ -1,43 +1,88 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { queryClient, apiRequest } from '../lib/queryClient';
-import { useQuery } from '@tanstack/react-query';
-
-interface UserData {
-  id: string;
-  username: string;
-  email: string;
-  name: string | null;
-  isAdmin: boolean;
-}
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabaseClient';
 
 interface AuthContextType {
-  user: UserData | null;
+  user: User | null;
+  session: Session | null;
   loading: boolean;
+  signUp: (email: string, password: string, name?: string) => Promise<{ error: Error | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signInWithGoogle: () => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const { data: authData, isLoading } = useQuery<{ user: UserData }>({
-    queryKey: ['/api/auth/me'],
-    retry: false,
-    staleTime: Infinity,
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const initAuth = async () => {
+      try {
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        if (mounted) {
+          setSession(initialSession);
+          setUser(initialSession?.user ?? null);
+        }
+      } catch (error) {
+        console.error('Auth init error:', error);
+      }
+    };
+
+    initAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      if (mounted) {
+        setSession(newSession);
+        setUser(newSession?.user ?? null);
+      }
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const signUp = async (email: string, password: string, name?: string) => {
+    const { error } = await supabase.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        data: {
+          full_name: name || '',
+        }
+      }
+    });
+    return { error: error as Error | null };
+  };
+
+  const signIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    return { error: error as Error | null };
+  };
+
+  const signInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+      }
+    });
+    return { error: error as Error | null };
+  };
 
   const signOut = async () => {
-    try {
-      await apiRequest('POST', '/api/auth/logout');
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      localStorage.removeItem('kef_user');
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-    }
+    await supabase.auth.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ user: authData?.user ?? null, loading: isLoading, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signInWithGoogle, signOut }}>
       {children}
     </AuthContext.Provider>
   );
