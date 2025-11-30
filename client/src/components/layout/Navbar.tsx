@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { KEFLogo } from "@/components/KEFLogo";
 import { queryClient } from "@/lib/queryClient";
+import { supabase } from "@/lib/supabaseClient";
 
 interface SessionUser {
   id: string;
@@ -74,6 +75,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
+      await supabase.auth.signOut();
       await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
     } catch (error) {
       console.error('Logout error:', error);

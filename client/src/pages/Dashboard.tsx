@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { queryClient } from '../lib/queryClient';
+import { supabase } from '../lib/supabaseClient';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
@@ -47,6 +48,7 @@ export default function Dashboard() {
 
   const handleLogout = async () => {
     try {
+      await supabase.auth.signOut();
       await fetch('/api/auth/logout', { method: 'POST' });
     } catch (error) {
       console.error('Logout error:', error);
