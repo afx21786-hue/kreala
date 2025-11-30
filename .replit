@@ -51,3 +51,8 @@ waitForPort = 5000
 
 [agent]
 expertMode = true
+
+[userenv]
+
+[userenv.shared]
+SUPABASE_PROJECT_ID = "elwyfsuqbcuttzshwcaf"
