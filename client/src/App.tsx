@@ -12,15 +12,15 @@ import Dashboard from "@/pages/Dashboard";
 import NotFound from "@/pages/not-found";
 
 // Lazy load non-critical pages for faster initial load
-const About = lazy(() => import("@/pages/About"));
-const Programs = lazy(() => import("@/pages/Programs"));
-const Events = lazy(() => import("@/pages/Events"));
-const Membership = lazy(() => import("@/pages/Membership"));
-const Resources = lazy(() => import("@/pages/Resources"));
-const Partners = lazy(() => import("@/pages/Partners"));
-const Contact = lazy(() => import("@/pages/Contact"));
-const StartupSupport = lazy(() => import("@/pages/StartupSupport"));
-const Campus = lazy(() => import("@/pages/Campus"));
+const About = lazy(() => import("@/pages/About").then(m => ({ default: m.default })));
+const Programs = lazy(() => import("@/pages/Programs").then(m => ({ default: m.default })));
+const Events = lazy(() => import("@/pages/Events").then(m => ({ default: m.default })));
+const Membership = lazy(() => import("@/pages/Membership").then(m => ({ default: m.default })));
+const Resources = lazy(() => import("@/pages/Resources").then(m => ({ default: m.default })));
+const Partners = lazy(() => import("@/pages/Partners").then(m => ({ default: m.default })));
+const Contact = lazy(() => import("@/pages/Contact").then(m => ({ default: m.default })));
+const StartupSupport = lazy(() => import("@/pages/StartupSupport").then(m => ({ default: m.default })));
+const Campus = lazy(() => import("@/pages/Campus").then(m => ({ default: m.default })));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
