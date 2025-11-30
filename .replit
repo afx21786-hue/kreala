@@ -56,3 +56,7 @@ expertMode = true
 
 [userenv.shared]
 SUPABASE_PROJECT_ID = "elwyfsuqbcuttzshwcaf"
+
+[userenv.development]
+VITE_SUPABASE_URL = "https://elwyfsuqbcuttzshwcaf.supabase.co"
+VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVsd3lmc3VxYmN1dHR6c2h3Y2FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ0Njk4MzYsImV4cCI6MjA4MDA0NTgzNn0.Ujubw0Otvah8UsLSNhp-7Qz5wZ2tdpUs__1Yv61hQfA"

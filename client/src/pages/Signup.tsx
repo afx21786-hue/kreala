@@ -32,6 +32,42 @@ export default function Signup() {
     }
   }, [toast]);
 
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          try {
+            const response = await apiRequest('POST', '/api/auth/oauth-signup', {
+              email: session.user.email,
+              name: session.user.user_metadata?.full_name || session.user.email,
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error);
+
+            localStorage.setItem('kef_user', JSON.stringify(data.user));
+            toast({
+              title: "Welcome to KEF!",
+              description: data.user.isAdmin
+                ? "You are one of the first 4 members - you have admin access!"
+                : "Your account has been created successfully.",
+            });
+            setLocation('/dashboard');
+          } catch (error: any) {
+            console.error('OAuth signup error:', error);
+            toast({
+              title: "OAuth Signup Failed",
+              description: error.message || "Failed to create account",
+              variant: "destructive",
+            });
+          }
+        }
+      }
+    );
+
+    return () => subscription?.unsubscribe();
+  }, [setLocation, toast]);
+
   const handleGoogleSignup = async () => {
     try {
       setLoading(true);

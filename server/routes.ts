@@ -71,6 +71,44 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/auth/oauth-signup", async (req, res) => {
+    try {
+      const { email, name } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: "Email is required" });
+      }
+
+      let user = await storage.getUserByEmail(email);
+      
+      if (!user) {
+        const username = email.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '_').slice(0, 20);
+        user = await storage.createUser({
+          email,
+          name: name || null,
+          username: username,
+          password: "", // OAuth users don't have passwords
+        });
+      }
+
+      req.session.regenerate((err) => {
+        if (err) {
+          console.error("Session regeneration error:", err);
+          return res.status(500).json({ error: "OAuth signup failed" });
+        }
+
+        req.session.userId = user!.id;
+        req.session.isAdmin = user!.isAdmin;
+
+        const { password: _, ...userWithoutPassword } = user!;
+        res.status(201).json({ user: userWithoutPassword });
+      });
+    } catch (error) {
+      console.error("OAuth signup error:", error);
+      res.status(500).json({ error: "OAuth signup failed" });
+    }
+  });
+
   app.post("/api/auth/login", async (req, res) => {
     try {
       const { email, password } = req.body;
