@@ -90,13 +90,13 @@ export default function ProgramsSection() {
             Our Programs
           </span>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Signature Programs for{" "}
+            Our Signature{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-kef-teal to-kef-gold">
-              Growth
+              Programs
             </span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Comprehensive programs designed to support entrepreneurs at every stage of their journey.
+            We offer a range of programs designed to empower entrepreneurs, students, businesses, and institutions. Each program is crafted to create real impact, practical learning, and meaningful opportunities.
           </p>
         </div>
 

@@ -128,10 +128,10 @@ export default function About() {
                   </span>
                 </h1>
                 <p className="text-lg text-muted-foreground mb-6">
-                  Kerala Economic Forum is a statewide non-profit organization dedicated to empowering entrepreneurs, students, startups, and institutions across Kerala.
+                  Kerala Economic Forum (KEF) is a non-profit movement formed with a single mission: to uplift Kerala's entrepreneurial landscape by building a powerful, interconnected ecosystem where entrepreneurs, students, professionals, institutions, and investors can grow together.
                 </p>
                 <p className="text-muted-foreground mb-8">
-                  Founded with a vision to transform Kerala into a global hub for innovation and entrepreneurship, we provide comprehensive support through programs, resources, and a vibrant community network.
+                  We exist to help Kerala move forward—economically, socially, and technologically—through innovation, entrepreneurship, collaboration, and opportunities for all.
                 </p>
                 <Button size="lg" className="gap-2" data-testid="button-about-join">
                   Join Our Mission
@@ -165,9 +165,13 @@ export default function About() {
                     <Target className="w-7 h-7 text-kef-teal" />
                   </div>
                   <h3 className="text-2xl font-bold mb-4">Our Mission</h3>
-                  <p className="text-muted-foreground">
-                    To create a thriving entrepreneurial ecosystem in Kerala by providing world-class support, resources, and connections to innovators at every stage of their journey.
-                  </p>
+                  <ul className="text-muted-foreground space-y-2 text-sm">
+                    <li>• To empower startups at every stage—from idea to scale</li>
+                    <li>• To build Kerala's largest interconnected entrepreneur community</li>
+                    <li>• To strengthen student entrepreneurship and campus innovation</li>
+                    <li>• To conduct transformative business events and conclaves</li>
+                    <li>• To offer continuous business advisory and expert mentorship</li>
+                  </ul>
                 </CardContent>
               </AnimatedCard>
               <AnimatedCard
@@ -182,7 +186,7 @@ export default function About() {
                   </div>
                   <h3 className="text-2xl font-bold mb-4">Our Vision</h3>
                   <p className="text-muted-foreground">
-                    To position Kerala as a global leader in innovation and sustainable entrepreneurship, driving economic growth while preserving our cultural values.
+                    To position Kerala as a globally recognised entrepreneurial state where every aspiring founder receives the support, network, and resources needed to build and scale meaningful businesses.
                   </p>
                 </CardContent>
               </AnimatedCard>

@@ -54,17 +54,17 @@ export default function HeroSection() {
           <h1
             className={`text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight mb-6 transition-all duration-700 delay-100 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
           >
-            Empowering{" "}
+            Where Kerala's{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-kef-teal via-kef-gold to-kef-red">
-              Innovation
+              Entrepreneurs
             </span>{" "}
-            Across Kerala
+            Rise Together
           </h1>
 
           <p
             className={`text-lg md:text-xl text-white/80 mb-8 max-w-2xl transition-all duration-700 delay-200 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
           >
-            A statewide non-profit empowering entrepreneurs, students, startups, and institutions to drive Kerala's economic transformation.
+            A statewide non-profit movement empowering entrepreneurs, startups, students, institutions, and innovators to build, grow, and transform Kerala's economic future.
           </p>
 
           <div
@@ -91,9 +91,9 @@ export default function HeroSection() {
           <div
             className={`grid grid-cols-3 gap-8 mt-16 pt-8 border-t border-white/10 transition-all duration-700 delay-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
           >
-            <StatCounter value={500} suffix="+" label="Startups Supported" />
-            <StatCounter value={50} suffix="K+" label="Community Members" />
-            <StatCounter value={100} suffix="+" label="Events Hosted" />
+            <StatCounter value={2000} suffix="+" label="Startups to Support" />
+            <StatCounter value={10000} suffix="+" label="Entrepreneurs" />
+            <StatCounter value={100} suffix="+" label="Crore Funding Target" />
           </div>
         </div>
       </div>

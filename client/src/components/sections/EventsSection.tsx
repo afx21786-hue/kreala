@@ -9,43 +9,43 @@ import eventImage from "@assets/generated_images/premium_business_conference_sta
 const events = [
   {
     id: 1,
-    title: "Kerala Startup Summit 2025",
+    title: "Kerala Startup Fest - January",
     date: "January 15-16, 2025",
     time: "9:00 AM - 6:00 PM",
     location: "Technopark, Thiruvananthapuram",
     category: "Summit",
-    attendees: 500,
+    attendees: 1000,
     image: eventImage,
     featured: true,
   },
   {
     id: 2,
-    title: "Investor Pitch Day",
+    title: "KEF Founder Roundtable",
     date: "January 25, 2025",
     time: "2:00 PM - 5:00 PM",
     location: "InfoPark, Kochi",
     category: "Networking",
-    attendees: 150,
+    attendees: 50,
     featured: false,
   },
   {
     id: 3,
-    title: "Women in Tech Workshop",
+    title: "Startup Boot Camp",
     date: "February 5, 2025",
-    time: "10:00 AM - 4:00 PM",
-    location: "Cyber Park, Kozhikode",
-    category: "Workshop",
-    attendees: 100,
+    time: "Residential Program",
+    location: "Across Kerala",
+    category: "Training",
+    attendees: 200,
     featured: false,
   },
   {
     id: 4,
-    title: "AI & Innovation Hackathon",
-    date: "February 15-16, 2025",
-    time: "48 Hours",
-    location: "CUSAT, Kochi",
-    category: "Hackathon",
-    attendees: 300,
+    title: "Business Conclaves",
+    date: "Multiple Dates",
+    time: "Varies",
+    location: "Multiple Locations",
+    category: "Networking",
+    attendees: 500,
     featured: false,
   },
 ];
@@ -83,9 +83,9 @@ export default function EventsSection() {
               Upcoming Events
             </span>
             <h2 className="text-3xl md:text-4xl font-bold">
-              Connect, Learn &{" "}
+              Upcoming{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-kef-gold to-kef-red">
-                Grow
+                Events
               </span>
             </h2>
           </div>
