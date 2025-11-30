@@ -134,11 +134,21 @@ export default function Campus() {
                 Empowering students across Kerala with the skills, resources, and networks to start their entrepreneurial journey.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
-                <Button size="lg" className="gap-2" data-testid="button-register-college">
+                <Button 
+                  size="lg" 
+                  className="gap-2" 
+                  onClick={() => navigate("/contact")}
+                  data-testid="button-register-college"
+                >
                   Register Your College
                   <ArrowRight className="w-4 h-4" />
                 </Button>
-                <Button size="lg" variant="outline" data-testid="button-student-join">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  onClick={() => navigate("/signup")}
+                  data-testid="button-student-join"
+                >
                   Join as Student
                 </Button>
               </div>
