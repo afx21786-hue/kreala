@@ -2,14 +2,16 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, User, LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { KEFLogo } from "@/components/KEFLogo";
+import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -33,7 +35,8 @@ const navItems = [
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
+  const { user, signOut, loading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,6 +45,11 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleLogout = async () => {
+    await signOut();
+    setLocation('/');
+  };
 
   return (
     <nav
@@ -98,12 +106,45 @@ export default function Navbar() {
           </div>
 
           <div className="hidden lg:flex items-center gap-3">
-            <Button variant="outline" size="sm" data-testid="button-login">
-              Login
-            </Button>
-            <Button size="sm" data-testid="button-join">
-              Join KEF
-            </Button>
+            {!loading && (
+              user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <User className="w-4 h-4" />
+                      <span className="max-w-32 truncate">{user.email?.split('@')[0]}</span>
+                      <ChevronDown className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard" className="cursor-pointer">
+                        <User className="w-4 h-4 mr-2" />
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <Button variant="outline" size="sm" data-testid="button-login">
+                      Login
+                    </Button>
+                  </Link>
+                  <Link href="/signup">
+                    <Button size="sm" data-testid="button-join">
+                      Join KEF
+                    </Button>
+                  </Link>
+                </>
+              )
+            )}
           </div>
 
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -130,8 +171,42 @@ export default function Navbar() {
                   </Link>
                 ))}
                 <div className="flex flex-col gap-2 mt-4 pt-4 border-t">
-                  <Button variant="outline" data-testid="mobile-button-login">Login</Button>
-                  <Button data-testid="mobile-button-join">Join KEF</Button>
+                  {!loading && (
+                    user ? (
+                      <>
+                        <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                          <Button variant="outline" className="w-full">
+                            <User className="w-4 h-4 mr-2" />
+                            Dashboard
+                          </Button>
+                        </Link>
+                        <Button 
+                          variant="ghost" 
+                          className="w-full text-red-600"
+                          onClick={() => {
+                            handleLogout();
+                            setIsOpen(false);
+                          }}
+                        >
+                          <LogOut className="w-4 h-4 mr-2" />
+                          Logout
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Link href="/login" onClick={() => setIsOpen(false)}>
+                          <Button variant="outline" className="w-full" data-testid="mobile-button-login">
+                            Login
+                          </Button>
+                        </Link>
+                        <Link href="/signup" onClick={() => setIsOpen(false)}>
+                          <Button className="w-full" data-testid="mobile-button-join">
+                            Join KEF
+                          </Button>
+                        </Link>
+                      </>
+                    )
+                  )}
                 </div>
               </div>
             </SheetContent>
