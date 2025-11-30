@@ -35,6 +35,7 @@ const navItems = [
     ],
   },
   { label: "Events", href: "/events" },
+  { label: "Membership", href: "/membership" },
   { label: "Resources", href: "/resources" },
   { label: "Partners", href: "/partners" },
   { label: "Contact", href: "/contact" },
