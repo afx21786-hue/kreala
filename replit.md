@@ -21,17 +21,20 @@ Frontend prototype completed with all 10 pages plus authentication:
 
 ## Authentication
 - **Provider**: Session-based authentication with express-session
-- **Methods**: Email/password with bcrypt hashing
+- **Methods**: 
+  - Email/password with bcrypt hashing
+  - Google OAuth via Passport.js
 - **Features**: 
   - Secure session cookies (httpOnly, sameSite: lax, secure in production)
   - Session regeneration on login/register to prevent session fixation
   - First 4 signups automatically get admin access
   - Protected routes with server-side validation
+  - Google OAuth auto-creates user account on first login
 - **Admin Panel**: Accessible only to first 4 registered users
   - View all users and platform statistics
   - Server-side access control with requireAdmin middleware
 - **Files**: 
-  - `server/routes.ts` - Auth endpoints and middleware
+  - `server/routes.ts` - Auth endpoints (register, login, logout, Google OAuth) and middleware
   - `server/storage.ts` - User storage with signup order tracking
   - `client/src/pages/Login.tsx`, `Signup.tsx`, `Dashboard.tsx`, `Admin.tsx` - Auth pages
 
@@ -85,6 +88,9 @@ client/src/
   - Server-side access control for protected routes
   - Query cache clearing on logout
   - Signup order tracking for admin access control
+- Added Google OAuth sign-up on signup page with Passport.js strategy
+  - Auto-creates user account on first Google login
+  - Seamless integration with existing session management
 
 ## User Preferences
 - Premium, futuristic, startup-style UI

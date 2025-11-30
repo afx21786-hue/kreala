@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from '../hooks/use-toast';
 import { KEFLogo } from '../components/KEFLogo';
 import { apiRequest } from '../lib/queryClient';
+import { Chrome } from 'lucide-react';
 
 export default function Signup() {
   const [name, setName] = useState('');
@@ -17,6 +18,18 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get('error');
+    if (error) {
+      toast({
+        title: "Login Error",
+        description: "Google login failed. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }, [toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,6 +179,26 @@ export default function Signup() {
               data-testid="button-signup"
             >
               {loading ? 'Creating Account...' : 'Sign Up'}
+            </Button>
+            
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-muted"></span>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white dark:bg-card px-2 text-muted-foreground">Or</span>
+              </div>
+            </div>
+
+            <Button 
+              type="button"
+              variant="outline"
+              className="w-full gap-2"
+              onClick={() => window.location.href = '/api/auth/google'}
+              data-testid="button-google-signup"
+            >
+              <Chrome className="w-4 h-4" />
+              Sign up with Google
             </Button>
           </CardFooter>
         </form>
