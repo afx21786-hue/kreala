@@ -152,11 +152,11 @@ export default function EventsSection() {
                 data-testid={`card-event-${event.id}`}
               >
                 <CardContent className="p-4 flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-md bg-gradient-to-br from-kef-teal/20 to-kef-gold/20 flex flex-col items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
-                    <span className="text-2xl font-bold text-foreground">
+                  <div className="w-16 h-16 rounded-md bg-gradient-to-br from-kef-teal/10 to-kef-gold/10 flex flex-col items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
+                    <span className="text-lg font-bold text-foreground leading-tight text-center">
                       {event.date.split(" ")[1]?.replace(",", "")}
                     </span>
-                    <span className="text-xs text-muted-foreground uppercase">
+                    <span className="text-[10px] text-muted-foreground uppercase font-medium">
                       {event.date.split(" ")[0]?.slice(0, 3)}
                     </span>
                   </div>
