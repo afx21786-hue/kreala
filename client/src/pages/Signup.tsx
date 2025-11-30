@@ -162,7 +162,9 @@ export default function Signup() {
       <Card className="w-full max-w-md shadow-xl border-0">
         <CardHeader className="space-y-4 text-center">
           <div className="flex justify-center">
-            <KEFLogo className="h-12 w-auto" />
+            <Link href="/" data-testid="link-home-logo">
+              <KEFLogo className="h-12 w-auto cursor-pointer" />
+            </Link>
           </div>
           <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
           <CardDescription>
