@@ -7,6 +7,7 @@ import { AnimatedCard, useScrollAnimation } from "@/components/ui/animated-card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Target, Eye, Heart, Users, Award, Lightbulb, ArrowRight, Quote, CheckCircle2, TrendingUp, GraduationCap, Building2 } from "lucide-react";
+import { SectionDecorations } from "@/components/ui/decorative-elements";
 import aboutImage from "@assets/generated_images/startup_workspace_team_collaboration.png";
 
 const whyKeralaNeeds = [
@@ -191,8 +192,9 @@ export default function About() {
           </div>
         </section>
 
-        <section ref={missionRef} className="py-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section ref={missionRef} className="py-24 relative overflow-hidden">
+          <SectionDecorations position="both" />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="grid md:grid-cols-2 gap-8 mb-16">
               <AnimatedCard
                 direction="left"
@@ -284,8 +286,9 @@ export default function About() {
           </div>
         </section>
 
-        <section className="py-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-24 relative overflow-hidden">
+          <SectionDecorations position="both" />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center mb-16">
               <span className="inline-block px-4 py-1 rounded-full bg-kef-teal/10 text-kef-teal text-sm font-medium mb-4">
                 Our Purpose

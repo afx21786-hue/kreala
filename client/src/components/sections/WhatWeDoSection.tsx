@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Rocket, TrendingUp, GraduationCap, Users, Lightbulb, MapPin } from "lucide-react";
+import { SectionDecorations } from "@/components/ui/decorative-elements";
 
 const focusAreas = [
   {
@@ -82,8 +83,9 @@ export default function WhatWeDoSection() {
   }, []);
 
   return (
-    <section className="py-24 bg-muted/30" ref={sectionRef}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-24 bg-muted/30 relative overflow-hidden" ref={sectionRef}>
+      <SectionDecorations position="both" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
           <span className="inline-block px-4 py-1 rounded-full bg-kef-teal/10 text-kef-teal text-sm font-medium mb-4">
             Our Focus

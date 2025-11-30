@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { SectionDecorations } from "@/components/ui/decorative-elements";
 import {
   Rocket, Users, GraduationCap, Lightbulb, Target, Building2, ArrowRight,
   Calendar, Clock, MapPin, CheckCircle2, BookOpen
@@ -193,8 +194,9 @@ export default function Programs() {
           </div>
         </section>
 
-        <section className="py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-16 relative overflow-hidden">
+          <SectionDecorations position="both" />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             {isLoading ? (
               <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>

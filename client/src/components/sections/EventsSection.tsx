@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, ArrowRight, Clock, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { SectionDecorations } from "@/components/ui/decorative-elements";
 import eventImage from "@assets/generated_images/premium_business_conference_stage.png";
 
 // todo: remove mock functionality
@@ -86,8 +87,9 @@ export default function EventsSection() {
   const otherEvents = events.filter((e) => !e.featured);
 
   return (
-    <section ref={sectionRef} className="py-24 bg-muted/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section ref={sectionRef} className="py-24 bg-muted/30 relative overflow-hidden">
+      <SectionDecorations position="both" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
           <div>
             <span className="inline-block px-4 py-1 rounded-full bg-kef-gold/10 text-kef-gold text-sm font-medium mb-4">

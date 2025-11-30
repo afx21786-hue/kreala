@@ -14,6 +14,7 @@ import { Rocket, Bell, Calendar, CheckCircle2, ArrowRight, Star } from "lucide-r
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { SectionDecorations } from "@/components/ui/decorative-elements";
 
 interface MembershipPlan {
   id: string;
@@ -102,8 +103,9 @@ export default function Membership() {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <main className="pt-24 pb-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="pt-24 pb-16 relative overflow-hidden">
+        <SectionDecorations position="both" />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-12">
             <Badge variant="outline" className="mb-4">Membership Plans</Badge>
             <h1 className="text-4xl font-bold mb-4" data-testid="text-membership-title">

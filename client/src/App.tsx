@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { AuthProvider } from "./hooks/useAuth";
 import { supabase } from "./lib/supabaseClient";
+import { DecorativeElements } from "@/components/ui/decorative-elements";
 import Home from "@/pages/Home";
 import About from "@/pages/About";
 import Programs from "@/pages/Programs";
@@ -118,6 +119,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <TooltipProvider>
+          <DecorativeElements variant="default" density="normal" />
           <Toaster />
           <OAuthCallbackHandler />
           <Router />

@@ -17,6 +17,7 @@ import {
 import { MapPin, Phone, Mail, Send, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { SectionDecorations } from "@/components/ui/decorative-elements";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -84,8 +85,9 @@ export default function Contact() {
           </div>
         </section>
 
-        <section className="py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-16 relative overflow-hidden">
+          <SectionDecorations position="both" />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="grid lg:grid-cols-3 gap-8">
               <div className="space-y-6">
                 <Card className="border-0 shadow-sm hover-elevate" data-testid="card-contact-address">

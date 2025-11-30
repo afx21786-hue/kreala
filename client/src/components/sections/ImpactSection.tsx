@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from "react";
+import { SectionDecorations } from "@/components/ui/decorative-elements";
 
 const impactMetrics = [
   { value: 2000, suffix: "+", label: "Startups to be supported" },
@@ -83,8 +84,9 @@ export default function ImpactSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-24 bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section ref={sectionRef} className="py-24 bg-background relative overflow-hidden">
+      <SectionDecorations position="both" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div
           className={`text-center mb-16 transition-all duration-700 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"

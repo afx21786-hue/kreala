@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { SectionDecorations } from "@/components/ui/decorative-elements";
 import { ArrowRight, Building2, Handshake, Users, Target, CheckCircle2 } from "lucide-react";
 
 // todo: remove mock functionality
@@ -151,8 +152,9 @@ export default function Partners() {
           </div>
         </section>
 
-        <section ref={sectionRef} className="py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section ref={sectionRef} className="py-16 relative overflow-hidden">
+          <SectionDecorations position="both" />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="grid md:grid-cols-2 gap-8">
               {partnerCategories.map((category, categoryIndex) => (
                 <Card
