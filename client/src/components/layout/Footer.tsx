@@ -32,7 +32,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           <div className="lg:col-span-2">
             <div className="mb-4">
-              <KEFLogo className="h-12 w-auto" />
+              <KEFLogo className="h-16 w-auto" />
             </div>
             <p className="text-background/70 mb-6 max-w-sm">
               Empowering entrepreneurs, students, startups, and institutions across Kerala to drive economic transformation.
