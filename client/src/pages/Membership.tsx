@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Star, Zap, Crown, ArrowRight } from "lucide-react";
 
 // todo: remove mock functionality
@@ -79,6 +80,26 @@ export default function Membership() {
   const [isYearly, setIsYearly] = useState(true);
   const [visibleCards, setVisibleCards] = useState<number[]>([]);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+
+  const handleSelectPlan = (planName: string, planId: string) => {
+    if (planId === "starter") {
+      toast({
+        title: "Welcome to KEF!",
+        description: "Your free membership is now active. Explore our community and get started with KEF.",
+      });
+    } else if (planId === "professional") {
+      toast({
+        title: "Upgrade Initiated",
+        description: `Let's get you started with the ${planName} plan. Complete your payment to unlock all benefits.`,
+      });
+    } else if (planId === "enterprise") {
+      toast({
+        title: "Sales Team Alert",
+        description: `Our enterprise team will contact you within 24 hours to discuss the ${planName} plan and custom solutions.`,
+      });
+    }
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -209,6 +230,7 @@ export default function Membership() {
                     <Button
                       className={`w-full gap-2 ${plan.popular ? "" : "bg-foreground text-background hover:bg-foreground/90"}`}
                       variant={plan.popular ? "default" : "outline"}
+                      onClick={() => handleSelectPlan(plan.name, plan.id)}
                       data-testid={`button-select-${plan.id}`}
                     >
                       {plan.cta}

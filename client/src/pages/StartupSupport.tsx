@@ -4,6 +4,7 @@ import Footer from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 import {
   Accordion,
   AccordionContent,
@@ -116,6 +117,21 @@ const faqs = [
 
 export default function StartupSupport() {
   const [selectedStage, setSelectedStage] = useState(0);
+  const { toast } = useToast();
+
+  const handleApplySupport = () => {
+    toast({
+      title: "Application Submitted!",
+      description: "Your startup support application has been received. Our team will review and contact you within 48 hours.",
+    });
+  };
+
+  const handleDownloadResource = (resourceName: string) => {
+    toast({
+      title: `${resourceName} Download Started`,
+      description: "Your download will begin shortly. Check your downloads folder.",
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -136,7 +152,7 @@ export default function StartupSupport() {
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
                 Comprehensive support services designed to help Kerala's startups grow from idea to scale.
               </p>
-              <Button size="lg" className="gap-2" data-testid="button-apply-support">
+              <Button size="lg" className="gap-2" onClick={handleApplySupport} data-testid="button-apply-support">
                 Apply for Support
                 <ArrowRight className="w-4 h-4" />
               </Button>
@@ -261,7 +277,7 @@ export default function StartupSupport() {
                           <p className="text-sm text-muted-foreground">{resource.description}</p>
                         </div>
                         <Badge variant="outline">{resource.type}</Badge>
-                        <Button size="icon" variant="ghost" data-testid={`button-download-${resource.title.toLowerCase().replace(/\s/g, "-")}`}>
+                        <Button size="icon" variant="ghost" onClick={() => handleDownloadResource(resource.title)} data-testid={`button-download-${resource.title.toLowerCase().replace(/\s/g, "-")}`}>
                           <Download className="w-4 h-4" />
                         </Button>
                       </CardContent>

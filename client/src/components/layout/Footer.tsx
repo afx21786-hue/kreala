@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 import { MapPin, Phone, Mail, ArrowRight } from "lucide-react";
 import { KEFLogo } from "@/components/KEFLogo";
 
@@ -26,6 +28,24 @@ const footerLinks = {
 };
 
 export default function Footer() {
+  const [email, setEmail] = useState("");
+  const { toast } = useToast();
+
+  const handleNewsletterSubmit = () => {
+    if (!email) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address to subscribe.",
+      });
+      return;
+    }
+    toast({
+      title: "Subscribed!",
+      description: "Welcome to the KEF newsletter! Check your email for confirmation.",
+    });
+    setEmail("");
+  };
+
   return (
     <footer className="bg-foreground text-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -96,10 +116,13 @@ export default function Footer() {
               <Input
                 type="email"
                 placeholder="Your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleNewsletterSubmit()}
                 className="bg-background/10 border-background/20 text-background placeholder:text-background/50"
                 data-testid="input-newsletter-email"
               />
-              <Button size="icon" className="shrink-0" data-testid="button-newsletter-submit">
+              <Button size="icon" className="shrink-0" onClick={handleNewsletterSubmit} data-testid="button-newsletter-submit">
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </div>

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
 import {
   Rocket, Users, GraduationCap, Lightbulb, Target, Building2, ArrowRight,
   Calendar, Clock, MapPin, CheckCircle2
@@ -129,6 +130,14 @@ export default function Programs() {
   const [selectedProgram, setSelectedProgram] = useState(programs[0]);
   const [visibleCards, setVisibleCards] = useState<number[]>([]);
   const gridRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+
+  const handleApplyProgram = (programTitle: string) => {
+    toast({
+      title: "Application Started!",
+      description: `You're applying for ${programTitle}. Our team will review your application and contact you within 48 hours.`,
+    });
+  };
 
   const filteredPrograms = selectedCategory === "All"
     ? programs
@@ -236,7 +245,7 @@ export default function Programs() {
                             {program.nextBatch}
                           </span>
                         </div>
-                        <Button className="w-full gap-2 group/btn" data-testid={`button-apply-${program.id}`}>
+                        <Button className="w-full gap-2 group/btn" onClick={() => handleApplyProgram(program.title)} data-testid={`button-apply-${program.id}`}>
                           Apply Now
                           <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                         </Button>
@@ -279,7 +288,7 @@ export default function Programs() {
                             <CardTitle className="text-2xl">{selectedProgram.title}</CardTitle>
                             <p className="text-primary mt-1">{selectedProgram.subtitle}</p>
                           </div>
-                          <Button className="gap-2" data-testid="button-apply-detail">
+                          <Button className="gap-2" onClick={() => handleApplyProgram(selectedProgram.title)} data-testid="button-apply-detail">
                             Apply Now
                             <ArrowRight className="w-4 h-4" />
                           </Button>

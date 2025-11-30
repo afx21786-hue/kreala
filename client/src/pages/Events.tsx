@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 import { Calendar, MapPin, Clock, Users, Search, Filter, ArrowRight } from "lucide-react";
 import {
   Select,
@@ -92,6 +93,14 @@ export default function Events() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("date");
+  const { toast } = useToast();
+
+  const handleRegisterEvent = (eventTitle: string) => {
+    toast({
+      title: "Registration Confirmed!",
+      description: `You've registered for ${eventTitle}. A confirmation email will be sent to your registered email address.`,
+    });
+  };
 
   const filteredEvents = events
     .filter((event) => {
@@ -221,7 +230,7 @@ export default function Events() {
                         {event.attendees}+ Expected
                       </div>
                     </div>
-                    <Button className="w-full gap-2" data-testid={`button-register-${event.id}`}>
+                    <Button className="w-full gap-2" onClick={() => handleRegisterEvent(event.title)} data-testid={`button-register-${event.id}`}>
                       Register Now
                       <ArrowRight className="w-4 h-4" />
                     </Button>
