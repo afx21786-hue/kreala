@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle2 } from "lucide-react";
+import { MapPin, Phone, Mail, Send, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Contact() {
@@ -112,21 +112,6 @@ export default function Contact() {
                       <p className="text-sm text-muted-foreground">
                         inquiry@keralaeconomicforum.com<br />
                         membership@keralaeconomicforum.com
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-0 shadow-sm hover-elevate" data-testid="card-contact-hours">
-                  <CardContent className="p-6 flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-                      <Clock className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-1">Working Hours</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Monday - Friday: 9:00 AM - 6:00 PM<br />
-                        Saturday: 10:00 AM - 2:00 PM
                       </p>
                     </div>
                   </CardContent>
