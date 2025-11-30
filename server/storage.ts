@@ -1,7 +1,13 @@
-import { type User, type InsertUser, users } from "@shared/schema";
-import { randomUUID } from "crypto";
+import { 
+  type User, type InsertUser, users,
+  type Program, type InsertProgram, programs,
+  type Event, type InsertEvent, events,
+  type Resource, type InsertResource, resources,
+  type Membership, type InsertMembership, memberships,
+  type ContactMessage, type InsertContactMessage, contactMessages
+} from "@shared/schema";
 import { db } from "./db";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, desc } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -11,6 +17,36 @@ export interface IStorage {
   getUserCount(): Promise<number>;
   getAllUsers(): Promise<User[]>;
   getAdminUsers(): Promise<User[]>;
+
+  getPrograms(): Promise<Program[]>;
+  getProgram(id: string): Promise<Program | undefined>;
+  createProgram(program: InsertProgram): Promise<Program>;
+  updateProgram(id: string, program: Partial<InsertProgram>): Promise<Program | undefined>;
+  deleteProgram(id: string): Promise<boolean>;
+
+  getEvents(): Promise<Event[]>;
+  getEvent(id: string): Promise<Event | undefined>;
+  createEvent(event: InsertEvent): Promise<Event>;
+  updateEvent(id: string, event: Partial<InsertEvent>): Promise<Event | undefined>;
+  deleteEvent(id: string): Promise<boolean>;
+
+  getResources(): Promise<Resource[]>;
+  getResource(id: string): Promise<Resource | undefined>;
+  createResource(resource: InsertResource): Promise<Resource>;
+  updateResource(id: string, resource: Partial<InsertResource>): Promise<Resource | undefined>;
+  deleteResource(id: string): Promise<boolean>;
+
+  getMemberships(): Promise<Membership[]>;
+  getMembership(id: string): Promise<Membership | undefined>;
+  createMembership(membership: InsertMembership): Promise<Membership>;
+  updateMembership(id: string, membership: Partial<InsertMembership>): Promise<Membership | undefined>;
+  deleteMembership(id: string): Promise<boolean>;
+
+  getContactMessages(): Promise<ContactMessage[]>;
+  getContactMessage(id: string): Promise<ContactMessage | undefined>;
+  createContactMessage(message: InsertContactMessage): Promise<ContactMessage>;
+  markMessageAsRead(id: string): Promise<ContactMessage | undefined>;
+  deleteContactMessage(id: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -54,6 +90,126 @@ export class DatabaseStorage implements IStorage {
 
   async getAdminUsers(): Promise<User[]> {
     return db.select().from(users).where(eq(users.isAdmin, true));
+  }
+
+  async getPrograms(): Promise<Program[]> {
+    return db.select().from(programs).orderBy(desc(programs.createdAt));
+  }
+
+  async getProgram(id: string): Promise<Program | undefined> {
+    const [program] = await db.select().from(programs).where(eq(programs.id, id));
+    return program;
+  }
+
+  async createProgram(program: InsertProgram): Promise<Program> {
+    const [created] = await db.insert(programs).values(program).returning();
+    return created;
+  }
+
+  async updateProgram(id: string, program: Partial<InsertProgram>): Promise<Program | undefined> {
+    const [updated] = await db.update(programs).set(program).where(eq(programs.id, id)).returning();
+    return updated;
+  }
+
+  async deleteProgram(id: string): Promise<boolean> {
+    const result = await db.delete(programs).where(eq(programs.id, id));
+    return true;
+  }
+
+  async getEvents(): Promise<Event[]> {
+    return db.select().from(events).orderBy(desc(events.date));
+  }
+
+  async getEvent(id: string): Promise<Event | undefined> {
+    const [event] = await db.select().from(events).where(eq(events.id, id));
+    return event;
+  }
+
+  async createEvent(event: InsertEvent): Promise<Event> {
+    const [created] = await db.insert(events).values(event).returning();
+    return created;
+  }
+
+  async updateEvent(id: string, event: Partial<InsertEvent>): Promise<Event | undefined> {
+    const [updated] = await db.update(events).set(event).where(eq(events.id, id)).returning();
+    return updated;
+  }
+
+  async deleteEvent(id: string): Promise<boolean> {
+    await db.delete(events).where(eq(events.id, id));
+    return true;
+  }
+
+  async getResources(): Promise<Resource[]> {
+    return db.select().from(resources).orderBy(desc(resources.createdAt));
+  }
+
+  async getResource(id: string): Promise<Resource | undefined> {
+    const [resource] = await db.select().from(resources).where(eq(resources.id, id));
+    return resource;
+  }
+
+  async createResource(resource: InsertResource): Promise<Resource> {
+    const [created] = await db.insert(resources).values(resource).returning();
+    return created;
+  }
+
+  async updateResource(id: string, resource: Partial<InsertResource>): Promise<Resource | undefined> {
+    const [updated] = await db.update(resources).set(resource).where(eq(resources.id, id)).returning();
+    return updated;
+  }
+
+  async deleteResource(id: string): Promise<boolean> {
+    await db.delete(resources).where(eq(resources.id, id));
+    return true;
+  }
+
+  async getMemberships(): Promise<Membership[]> {
+    return db.select().from(memberships).orderBy(desc(memberships.createdAt));
+  }
+
+  async getMembership(id: string): Promise<Membership | undefined> {
+    const [membership] = await db.select().from(memberships).where(eq(memberships.id, id));
+    return membership;
+  }
+
+  async createMembership(membership: InsertMembership): Promise<Membership> {
+    const [created] = await db.insert(memberships).values(membership).returning();
+    return created;
+  }
+
+  async updateMembership(id: string, membership: Partial<InsertMembership>): Promise<Membership | undefined> {
+    const [updated] = await db.update(memberships).set(membership).where(eq(memberships.id, id)).returning();
+    return updated;
+  }
+
+  async deleteMembership(id: string): Promise<boolean> {
+    await db.delete(memberships).where(eq(memberships.id, id));
+    return true;
+  }
+
+  async getContactMessages(): Promise<ContactMessage[]> {
+    return db.select().from(contactMessages).orderBy(desc(contactMessages.createdAt));
+  }
+
+  async getContactMessage(id: string): Promise<ContactMessage | undefined> {
+    const [message] = await db.select().from(contactMessages).where(eq(contactMessages.id, id));
+    return message;
+  }
+
+  async createContactMessage(message: InsertContactMessage): Promise<ContactMessage> {
+    const [created] = await db.insert(contactMessages).values(message).returning();
+    return created;
+  }
+
+  async markMessageAsRead(id: string): Promise<ContactMessage | undefined> {
+    const [updated] = await db.update(contactMessages).set({ isRead: true }).where(eq(contactMessages.id, id)).returning();
+    return updated;
+  }
+
+  async deleteContactMessage(id: string): Promise<boolean> {
+    await db.delete(contactMessages).where(eq(contactMessages.id, id));
+    return true;
   }
 }
 
