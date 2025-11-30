@@ -4,7 +4,9 @@ import {
   type Event, type InsertEvent, events,
   type Resource, type InsertResource, resources,
   type Membership, type InsertMembership, memberships,
-  type ContactMessage, type InsertContactMessage, contactMessages
+  type ContactMessage, type InsertContactMessage, contactMessages,
+  type Request, type InsertRequest, requests,
+  type MembershipPlan, type InsertMembershipPlan, membershipPlans
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, sql, desc } from "drizzle-orm";
@@ -48,6 +50,18 @@ export interface IStorage {
   createContactMessage(message: InsertContactMessage): Promise<ContactMessage>;
   markMessageAsRead(id: string): Promise<ContactMessage | undefined>;
   deleteContactMessage(id: string): Promise<boolean>;
+
+  getRequests(): Promise<Request[]>;
+  getRequest(id: string): Promise<Request | undefined>;
+  createRequest(request: InsertRequest): Promise<Request>;
+  updateRequestStatus(id: string, status: string): Promise<Request | undefined>;
+  deleteRequest(id: string): Promise<boolean>;
+
+  getMembershipPlans(): Promise<MembershipPlan[]>;
+  getMembershipPlan(id: string): Promise<MembershipPlan | undefined>;
+  createMembershipPlan(plan: InsertMembershipPlan): Promise<MembershipPlan>;
+  updateMembershipPlan(id: string, plan: Partial<InsertMembershipPlan>): Promise<MembershipPlan | undefined>;
+  deleteMembershipPlan(id: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -215,6 +229,54 @@ export class DatabaseStorage implements IStorage {
 
   async deleteContactMessage(id: string): Promise<boolean> {
     await db.delete(contactMessages).where(eq(contactMessages.id, id));
+    return true;
+  }
+
+  async getRequests(): Promise<Request[]> {
+    return db.select().from(requests).orderBy(desc(requests.createdAt));
+  }
+
+  async getRequest(id: string): Promise<Request | undefined> {
+    const [request] = await db.select().from(requests).where(eq(requests.id, id));
+    return request;
+  }
+
+  async createRequest(request: InsertRequest): Promise<Request> {
+    const [created] = await db.insert(requests).values(request).returning();
+    return created;
+  }
+
+  async updateRequestStatus(id: string, status: string): Promise<Request | undefined> {
+    const [updated] = await db.update(requests).set({ status }).where(eq(requests.id, id)).returning();
+    return updated;
+  }
+
+  async deleteRequest(id: string): Promise<boolean> {
+    await db.delete(requests).where(eq(requests.id, id));
+    return true;
+  }
+
+  async getMembershipPlans(): Promise<MembershipPlan[]> {
+    return db.select().from(membershipPlans).orderBy(desc(membershipPlans.createdAt));
+  }
+
+  async getMembershipPlan(id: string): Promise<MembershipPlan | undefined> {
+    const [plan] = await db.select().from(membershipPlans).where(eq(membershipPlans.id, id));
+    return plan;
+  }
+
+  async createMembershipPlan(plan: InsertMembershipPlan): Promise<MembershipPlan> {
+    const [created] = await db.insert(membershipPlans).values(plan).returning();
+    return created;
+  }
+
+  async updateMembershipPlan(id: string, plan: Partial<InsertMembershipPlan>): Promise<MembershipPlan | undefined> {
+    const [updated] = await db.update(membershipPlans).set(plan).where(eq(membershipPlans.id, id)).returning();
+    return updated;
+  }
+
+  async deleteMembershipPlan(id: string): Promise<boolean> {
+    await db.delete(membershipPlans).where(eq(membershipPlans.id, id));
     return true;
   }
 }

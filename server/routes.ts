@@ -7,7 +7,9 @@ import {
   insertEventSchema, 
   insertResourceSchema, 
   insertMembershipSchema, 
-  insertContactMessageSchema 
+  insertContactMessageSchema,
+  insertRequestSchema,
+  insertMembershipPlanSchema
 } from "@shared/schema";
 import bcrypt from "bcryptjs";
 
@@ -518,6 +520,114 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Delete message error:", error);
       res.status(500).json({ error: "Failed to delete message" });
+    }
+  });
+
+  app.post("/api/requests", async (req, res) => {
+    try {
+      const parsed = insertRequestSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid input", details: parsed.error.errors });
+      }
+      const request = await storage.createRequest(parsed.data);
+      res.status(201).json({ request, message: "Request submitted successfully" });
+    } catch (error) {
+      console.error("Create request error:", error);
+      res.status(500).json({ error: "Failed to submit request" });
+    }
+  });
+
+  app.get("/api/admin/requests", requireAdmin, async (req, res) => {
+    try {
+      const requests = await storage.getRequests();
+      res.json({ requests });
+    } catch (error) {
+      console.error("Get requests error:", error);
+      res.status(500).json({ error: "Failed to fetch requests" });
+    }
+  });
+
+  app.patch("/api/admin/requests/:id/status", requireAdmin, async (req, res) => {
+    try {
+      const { status } = req.body;
+      if (!status) {
+        return res.status(400).json({ error: "Status is required" });
+      }
+      const request = await storage.updateRequestStatus(req.params.id, status);
+      if (!request) {
+        return res.status(404).json({ error: "Request not found" });
+      }
+      res.json({ request });
+    } catch (error) {
+      console.error("Update request status error:", error);
+      res.status(500).json({ error: "Failed to update request status" });
+    }
+  });
+
+  app.delete("/api/admin/requests/:id", requireAdmin, async (req, res) => {
+    try {
+      await storage.deleteRequest(req.params.id);
+      res.json({ message: "Request deleted" });
+    } catch (error) {
+      console.error("Delete request error:", error);
+      res.status(500).json({ error: "Failed to delete request" });
+    }
+  });
+
+  app.get("/api/membership-plans", async (req, res) => {
+    try {
+      const plans = await storage.getMembershipPlans();
+      res.json({ plans: plans.filter(p => p.isActive) });
+    } catch (error) {
+      console.error("Get membership plans error:", error);
+      res.status(500).json({ error: "Failed to fetch membership plans" });
+    }
+  });
+
+  app.get("/api/admin/membership-plans", requireAdmin, async (req, res) => {
+    try {
+      const plans = await storage.getMembershipPlans();
+      res.json({ plans });
+    } catch (error) {
+      console.error("Get all membership plans error:", error);
+      res.status(500).json({ error: "Failed to fetch membership plans" });
+    }
+  });
+
+  app.post("/api/admin/membership-plans", requireAdmin, async (req, res) => {
+    try {
+      const parsed = insertMembershipPlanSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid input", details: parsed.error.errors });
+      }
+      const plan = await storage.createMembershipPlan(parsed.data);
+      res.status(201).json({ plan });
+    } catch (error) {
+      console.error("Create membership plan error:", error);
+      res.status(500).json({ error: "Failed to create membership plan" });
+    }
+  });
+
+  app.patch("/api/admin/membership-plans/:id", requireAdmin, async (req, res) => {
+    try {
+      const plan = await storage.updateMembershipPlan(req.params.id, req.body);
+      if (!plan) {
+        return res.status(404).json({ error: "Membership plan not found" });
+      }
+      res.json({ plan });
+    } catch (error) {
+      console.error("Update membership plan error:", error);
+      res.status(500).json({ error: "Failed to update membership plan" });
+    }
+  });
+
+  app.delete("/api/admin/membership-plans/:id", requireAdmin, async (req, res) => {
+    try {
+      await storage.deleteMembershipPlan(req.params.id);
+      res.json({ message: "Membership plan deleted" });
+    } catch (error) {
+      console.error("Delete membership plan error:", error);
+      res.status(500).json({ error: "Failed to delete membership plan" });
     }
   });
 
