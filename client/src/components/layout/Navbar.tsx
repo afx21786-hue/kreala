@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, X, ChevronDown, User, LogOut } from "lucide-react";
@@ -11,7 +12,15 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { KEFLogo } from "@/components/KEFLogo";
-import { useAuth } from "@/hooks/useAuth";
+import { queryClient } from "@/lib/queryClient";
+
+interface SessionUser {
+  id: string;
+  username: string;
+  email: string;
+  name: string | null;
+  isAdmin: boolean;
+}
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -36,7 +45,24 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [location, setLocation] = useLocation();
-  const { user, signOut, loading } = useAuth();
+
+  const { data: authData, isLoading: loading } = useQuery<{ user: SessionUser } | null>({
+    queryKey: ['/api/auth/me'],
+    retry: false,
+    staleTime: 1000 * 60 * 5,
+    queryFn: async () => {
+      const res = await fetch('/api/auth/me', { credentials: 'include' });
+      if (res.status === 401) {
+        return null;
+      }
+      if (!res.ok) {
+        throw new Error('Failed to fetch user');
+      }
+      return res.json();
+    },
+  });
+
+  const user = authData?.user || null;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -47,7 +73,13 @@ export default function Navbar() {
   }, []);
 
   const handleLogout = async () => {
-    await signOut();
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+    localStorage.removeItem('kef_user');
+    queryClient.clear();
     setLocation('/');
   };
 
@@ -115,7 +147,7 @@ export default function Navbar() {
                     <Button variant="outline" size="sm" className="gap-2">
                       <User className="w-4 h-4" />
                       <span className="max-w-32 truncate">
-                        {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                        {user.name || user.username || user.email?.split('@')[0]}
                       </span>
                       <ChevronDown className="w-4 h-4" />
                     </Button>

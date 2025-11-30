@@ -6,7 +6,7 @@ import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import { useToast } from '../hooks/use-toast';
 import { KEFLogo } from '../components/KEFLogo';
-import { apiRequest } from '../lib/queryClient';
+import { apiRequest, queryClient } from '../lib/queryClient';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -41,6 +41,8 @@ export default function Login() {
       }
       
       localStorage.setItem('kef_user', JSON.stringify(data.user));
+      
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
       
       toast({
         title: "Welcome back!",

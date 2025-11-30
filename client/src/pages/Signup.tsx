@@ -6,7 +6,7 @@ import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import { useToast } from '../hooks/use-toast';
 import { KEFLogo } from '../components/KEFLogo';
-import { apiRequest } from '../lib/queryClient';
+import { apiRequest, queryClient } from '../lib/queryClient';
 import { supabase } from '../lib/supabaseClient';
 import { Chrome } from 'lucide-react';
 
@@ -46,6 +46,7 @@ export default function Signup() {
             if (!response.ok) throw new Error(data.error);
 
             localStorage.setItem('kef_user', JSON.stringify(data.user));
+            queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
             toast({
               title: "Welcome to KEF!",
               description: data.user.isAdmin
@@ -135,6 +136,8 @@ export default function Signup() {
       }
       
       localStorage.setItem('kef_user', JSON.stringify(data.user));
+      
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
       
       toast({
         title: "Welcome to KEF!",
