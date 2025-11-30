@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { queryClient } from '../lib/queryClient';
-import { supabase } from '../lib/supabaseClient';
+import { queryClient, apiRequest } from '../lib/queryClient';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
@@ -28,6 +27,7 @@ export default function Dashboard() {
   const { data, isLoading, error } = useQuery<{ user: LocalUser }>({
     queryKey: ['/api/auth/me'],
     retry: false,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   useEffect(() => {
@@ -48,13 +48,12 @@ export default function Dashboard() {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
-      await fetch('/api/auth/logout', { method: 'POST' });
+      await apiRequest('POST', '/api/auth/logout');
     } catch (error) {
       console.error('Logout error:', error);
     }
     localStorage.removeItem('kef_user');
-    queryClient.clear();
+    queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
     toast({
       title: "Logged out",
       description: "You have been successfully logged out.",
