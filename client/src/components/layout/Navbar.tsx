@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import kefLogo from "@assets/KEF_1764483620458.png";
+import { KEFLogo } from "@/components/KEFLogo";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -53,13 +53,8 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
-          <Link href="/" className="flex items-center gap-2" data-testid="link-logo">
-            <img 
-              src={kefLogo} 
-              alt="Kerala Economic Forum" 
-              className="h-12 md:h-14 w-auto"
-              style={{ mixBlendMode: 'multiply' }}
-            />
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="link-logo">
+            <KEFLogo className="h-10 md:h-12 w-auto" />
           </Link>
 
           <div className="hidden lg:flex items-center gap-1">

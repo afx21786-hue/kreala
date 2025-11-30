@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MapPin, Phone, Mail, ArrowRight } from "lucide-react";
-import kefLogo from "@assets/KEF_1764483620458.png";
+import { KEFLogo } from "@/components/KEFLogo";
 
 const footerLinks = {
   quickLinks: [
@@ -31,12 +31,8 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           <div className="lg:col-span-2">
-            <div className="mb-4 bg-white/10 backdrop-blur-sm rounded-md p-2 inline-block">
-              <img 
-                src={kefLogo} 
-                alt="Kerala Economic Forum" 
-                className="h-12 w-auto"
-              />
+            <div className="mb-4">
+              <KEFLogo className="h-12 w-auto" />
             </div>
             <p className="text-background/70 mb-6 max-w-sm">
               Empowering entrepreneurs, students, startups, and institutions across Kerala to drive economic transformation.

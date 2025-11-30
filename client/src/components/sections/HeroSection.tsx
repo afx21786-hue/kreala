@@ -1,15 +1,25 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import heroImage from "@assets/generated_images/kerala_modern_cityscape_hero.png";
 
 export default function HeroSection() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
+
+  const handleVideo = () => {
+    toast({
+      title: "Video Coming Soon",
+      description: "We're preparing an exclusive video tour for you.",
+    });
+  };
 
   return (
     <section ref={sectionRef} className="relative min-h-screen flex items-center overflow-hidden">
@@ -60,14 +70,17 @@ export default function HeroSection() {
           <div
             className={`flex flex-wrap gap-4 transition-all duration-700 delay-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
           >
-            <Button size="lg" className="gap-2 group" data-testid="button-hero-join">
-              Join Our Community
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-            </Button>
+            <Link href="/membership">
+              <Button size="lg" className="gap-2 group" data-testid="button-hero-join">
+                Join Our Community
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </Link>
             <Button
               size="lg"
               variant="outline"
               className="gap-2 bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+              onClick={handleVideo}
               data-testid="button-hero-watch"
             >
               <Play className="w-4 h-4" />
