@@ -29,7 +29,6 @@ interface Event {
 
 export default function Events() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("date");
   const { toast } = useToast();
 
@@ -48,10 +47,8 @@ export default function Events() {
 
   const filteredEvents = events
     .filter((event) => {
-      const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      return event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (event.location?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
-      const matchesCategory = selectedCategory === "All";
-      return matchesSearch && matchesCategory;
     })
     .sort((a, b) => {
       if (sortBy === "date") return new Date(a.date).getTime() - new Date(b.date).getTime();

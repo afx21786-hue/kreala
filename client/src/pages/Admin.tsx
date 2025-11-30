@@ -249,17 +249,11 @@ export default function Admin() {
       if (!data.date) {
         throw new Error("Event date is required");
       }
-      // Convert datetime-local string to ISO timestamp
-      const dateStr = data.date.includes('T') ? data.date : `${data.date}T00:00`;
-      const dateObj = new Date(dateStr);
-      if (isNaN(dateObj.getTime())) {
-        throw new Error("Invalid date format");
-      }
       
       const response = await apiRequest("POST", "/api/admin/events", {
         title: data.title,
         description: data.description,
-        date: dateObj.toISOString(),
+        date: data.date,
         isActive: true,
         location: data.location || null,
         image: data.image || null
