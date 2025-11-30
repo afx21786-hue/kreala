@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient, apiRequest } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -36,64 +36,54 @@ function ScrollToTop() {
 function OAuthCallbackHandler() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [processed, setProcessed] = useState(false);
 
   useEffect(() => {
-    // Check if there's an access token in the URL hash (OAuth callback)
-    const hash = window.location.hash;
-    if (!hash || processed) return;
-
-    const params = new URLSearchParams(hash.substring(1));
-    const accessToken = params.get('access_token');
-    
-    if (!accessToken) return;
-
-    // Clear the hash from URL
-    window.history.replaceState(null, '', window.location.pathname);
-    setProcessed(true);
-
-    // Handle the OAuth callback
-    const handleOAuthCallback = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+    // Listen for Supabase auth state changes (handles OAuth callback automatically)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state change:', event, session?.user?.email);
         
-        if (error || !session) {
-          throw new Error('Failed to get session');
+        if (event === 'SIGNED_IN' && session) {
+          try {
+            // Clear URL hash if present
+            if (window.location.hash) {
+              window.history.replaceState(null, '', window.location.pathname);
+            }
+
+            // Register/login with our backend
+            const response = await apiRequest('POST', '/api/auth/oauth-signup', {
+              email: session.user.email,
+              name: session.user.user_metadata?.full_name || session.user.email,
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error);
+
+            localStorage.setItem('kef_user', JSON.stringify(data.user));
+            queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+            
+            toast({
+              title: "Welcome to KEF!",
+              description: data.user.isAdmin
+                ? "You are one of the first 4 members - you have admin access!"
+                : "You have been logged in successfully.",
+            });
+            
+            setLocation('/dashboard');
+          } catch (error: any) {
+            console.error('OAuth callback error:', error);
+            toast({
+              title: "Login Failed",
+              description: error.message || "Failed to complete login",
+              variant: "destructive",
+            });
+          }
         }
-
-        // Register/login with our backend
-        const response = await apiRequest('POST', '/api/auth/oauth-signup', {
-          email: session.user.email,
-          name: session.user.user_metadata?.full_name || session.user.email,
-        });
-
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error);
-
-        localStorage.setItem('kef_user', JSON.stringify(data.user));
-        queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-        
-        toast({
-          title: "Welcome to KEF!",
-          description: data.user.isAdmin
-            ? "You are one of the first 4 members - you have admin access!"
-            : "You have been logged in successfully.",
-        });
-        
-        setLocation('/dashboard');
-      } catch (error: any) {
-        console.error('OAuth callback error:', error);
-        toast({
-          title: "Login Failed",
-          description: error.message || "Failed to complete login",
-          variant: "destructive",
-        });
-        setLocation('/login');
       }
-    };
+    );
 
-    handleOAuthCallback();
-  }, [setLocation, toast, processed]);
+    return () => subscription?.unsubscribe();
+  }, [setLocation, toast]);
 
   return null;
 }
