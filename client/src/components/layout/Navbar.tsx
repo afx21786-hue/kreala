@@ -171,14 +171,14 @@ export default function Navbar() {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    onClick={() => setLocation("/membership")}
+                    onClick={() => setLocation("/login")}
                     data-testid="button-get-started"
                   >
                     Get Started
                   </Button>
                   <Button 
                     size="sm" 
-                    onClick={() => setLocation("/membership")}
+                    onClick={() => setLocation("/signup")}
                     data-testid="button-join"
                   >
                     Join KEF
@@ -243,7 +243,7 @@ export default function Navbar() {
                           variant="outline" 
                           className="w-full" 
                           onClick={() => {
-                            setLocation("/membership");
+                            setLocation("/login");
                             setIsOpen(false);
                           }}
                           data-testid="mobile-button-get-started"
@@ -253,7 +253,7 @@ export default function Navbar() {
                         <Button 
                           className="w-full" 
                           onClick={() => {
-                            setLocation("/membership");
+                            setLocation("/signup");
                             setIsOpen(false);
                           }}
                           data-testid="mobile-button-join"
