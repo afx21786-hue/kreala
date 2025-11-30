@@ -17,6 +17,7 @@ export interface IStorage {
   getUserCount(): Promise<number>;
   getAllUsers(): Promise<User[]>;
   getAdminUsers(): Promise<User[]>;
+  updateUserAdminStatus(id: string, isAdmin: boolean): Promise<User | undefined>;
 
   getPrograms(): Promise<Program[]>;
   getProgram(id: string): Promise<Program | undefined>;
@@ -90,6 +91,11 @@ export class DatabaseStorage implements IStorage {
 
   async getAdminUsers(): Promise<User[]> {
     return db.select().from(users).where(eq(users.isAdmin, true));
+  }
+
+  async updateUserAdminStatus(id: string, isAdmin: boolean): Promise<User | undefined> {
+    const [updated] = await db.update(users).set({ isAdmin }).where(eq(users.id, id)).returning();
+    return updated;
   }
 
   async getPrograms(): Promise<Program[]> {

@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Users, Shield, TrendingUp, Calendar, ArrowLeft } from "lucide-react";
+import { Users, Shield, TrendingUp, Calendar, ArrowLeft, UserMinus } from "lucide-react";
 
 interface AdminUser {
   id: string;
@@ -69,6 +70,34 @@ export default function Admin() {
     queryKey: ["/api/admin/users"],
     enabled: isConfirmedAdmin,
   });
+
+  const removeAdminMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const response = await apiRequest("PATCH", `/api/admin/users/${userId}/remove-admin`);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Admin Removed",
+        description: "Admin privileges have been removed successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to remove admin privileges",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleRemoveAdmin = (userId: string, username: string) => {
+    if (confirm(`Are you sure you want to remove admin privileges from ${username}?`)) {
+      removeAdminMutation.mutate(userId);
+    }
+  };
 
   if (authLoading) {
     return (
@@ -193,6 +222,7 @@ export default function Admin() {
                         <th className="text-left py-3 px-4 font-medium">Name</th>
                         <th className="text-left py-3 px-4 font-medium">Role</th>
                         <th className="text-left py-3 px-4 font-medium">Joined</th>
+                        <th className="text-left py-3 px-4 font-medium">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -218,6 +248,20 @@ export default function Admin() {
                           </td>
                           <td className="py-3 px-4 text-muted-foreground">
                             {new Date(user.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="py-3 px-4">
+                            {user.isAdmin && user.id !== currentUser?.id && (
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => handleRemoveAdmin(user.id, user.username)}
+                                disabled={removeAdminMutation.isPending}
+                                data-testid={`button-remove-admin-${user.id}`}
+                              >
+                                <UserMinus className="w-4 h-4 mr-1" />
+                                Remove Admin
+                              </Button>
+                            )}
                           </td>
                         </tr>
                       ))}

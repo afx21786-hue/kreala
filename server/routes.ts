@@ -188,6 +188,37 @@ export async function registerRoutes(
     }
   });
 
+  app.patch("/api/admin/users/:id/remove-admin", requireAdmin, async (req, res) => {
+    try {
+      const targetUserId = req.params.id;
+      const currentUserId = req.session.userId;
+
+      if (targetUserId === currentUserId) {
+        return res.status(400).json({ error: "You cannot remove your own admin privileges" });
+      }
+
+      const targetUser = await storage.getUser(targetUserId);
+      if (!targetUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      if (!targetUser.isAdmin) {
+        return res.status(400).json({ error: "User is not an admin" });
+      }
+
+      const updatedUser = await storage.updateUserAdminStatus(targetUserId, false);
+      if (!updatedUser) {
+        return res.status(500).json({ error: "Failed to update user" });
+      }
+
+      const { password: _, ...userWithoutPassword } = updatedUser;
+      res.json({ user: userWithoutPassword, message: "Admin privileges removed successfully" });
+    } catch (error) {
+      console.error("Remove admin error:", error);
+      res.status(500).json({ error: "Failed to remove admin privileges" });
+    }
+  });
+
   app.get("/api/admin/stats", requireAdmin, async (req, res) => {
     try {
       const users = await storage.getAllUsers();
