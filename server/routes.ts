@@ -195,28 +195,45 @@ export async function registerRoutes(
       const targetUserId = req.params.id;
       const currentUserId = req.session.userId;
 
+      console.log(`[Admin Removal] Attempting to remove admin from user ${targetUserId} by admin ${currentUserId}`);
+
       if (targetUserId === currentUserId) {
+        console.log(`[Admin Removal] Blocked: User tried to remove their own admin privileges`);
         return res.status(400).json({ error: "You cannot remove your own admin privileges" });
       }
 
       const targetUser = await storage.getUser(targetUserId);
       if (!targetUser) {
+        console.log(`[Admin Removal] Failed: Target user ${targetUserId} not found`);
         return res.status(404).json({ error: "User not found" });
       }
 
       if (!targetUser.isAdmin) {
+        console.log(`[Admin Removal] Skipped: User ${targetUser.email} is already not an admin`);
         return res.status(400).json({ error: "User is not an admin" });
       }
 
+      console.log(`[Admin Removal] Updating admin status for ${targetUser.email} (${targetUserId})`);
       const updatedUser = await storage.updateUserAdminStatus(targetUserId, false);
+      
       if (!updatedUser) {
+        console.error(`[Admin Removal] CRITICAL: Database update returned undefined for user ${targetUserId}`);
         return res.status(500).json({ error: "Failed to update user" });
       }
 
+      // Verify the change persisted
+      const verifyUser = await storage.getUser(targetUserId);
+      if (verifyUser?.isAdmin) {
+        console.error(`[Admin Removal] CRITICAL: Admin status not persisted! User ${targetUserId} still has isAdmin=true after update`);
+        return res.status(500).json({ error: "Failed to persist admin removal" });
+      }
+
+      console.log(`[Admin Removal] SUCCESS: Admin privileges removed from ${targetUser.email}. isAdmin is now ${updatedUser.isAdmin}`);
+      
       const { password: _, ...userWithoutPassword } = updatedUser;
       res.json({ user: userWithoutPassword, message: "Admin privileges removed successfully" });
     } catch (error) {
-      console.error("Remove admin error:", error);
+      console.error("[Admin Removal] Error:", error);
       res.status(500).json({ error: "Failed to remove admin privileges" });
     }
   });
