@@ -112,7 +112,9 @@ export default function Navbar() {
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm" className="gap-2">
                       <User className="w-4 h-4" />
-                      <span className="max-w-32 truncate">{user.email?.split('@')[0]}</span>
+                      <span className="max-w-32 truncate">
+                        {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                      </span>
                       <ChevronDown className="w-4 h-4" />
                     </Button>
                   </DropdownMenuTrigger>

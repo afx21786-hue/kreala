@@ -46,7 +46,9 @@ export default function Dashboard() {
       <main className="pt-24 pb-16 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Welcome to Your Dashboard</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Welcome{user.user_metadata?.full_name ? `, ${user.user_metadata.full_name}` : ''}!
+            </h1>
             <p className="text-gray-600 mt-2">Manage your Kerala Economic Forum membership and access exclusive resources.</p>
           </div>
 
@@ -63,6 +65,12 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
+                  {user.user_metadata?.full_name && (
+                    <div className="flex items-center text-sm text-gray-600">
+                      <User className="h-4 w-4 mr-2" />
+                      {user.user_metadata.full_name}
+                    </div>
+                  )}
                   <div className="flex items-center text-sm text-gray-600">
                     <Mail className="h-4 w-4 mr-2" />
                     {user.email}
