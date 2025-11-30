@@ -259,7 +259,7 @@ export default function Admin() {
       const response = await apiRequest("POST", "/api/admin/events", {
         title: data.title,
         description: data.description,
-        date: dateObj,
+        date: dateObj.toISOString(),
         isActive: true,
         location: data.location || null,
         image: data.image || null
