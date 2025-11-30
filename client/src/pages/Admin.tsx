@@ -16,7 +16,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { 
   Users, Shield, TrendingUp, ArrowLeft, UserMinus, Plus, Trash2, 
-  Calendar, BookOpen, FileText, Mail, Eye, MailOpen, Ticket
+  Calendar, BookOpen, FileText, Mail, Eye, MailOpen, Ticket, ClipboardList, Check, X
 } from "lucide-react";
 
 interface AdminUser {
@@ -80,6 +80,19 @@ interface Membership {
   status: string;
   notes: string | null;
   userId: string | null;
+  createdAt: string;
+}
+
+interface Request {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  organization: string | null;
+  requestType: string;
+  programId: string | null;
+  message: string | null;
+  status: string;
   createdAt: string;
 }
 
@@ -173,6 +186,11 @@ export default function Admin() {
 
   const { data: membershipsData, isLoading: membershipsLoading } = useQuery<{ memberships: Membership[] }>({
     queryKey: ["/api/admin/memberships"],
+    enabled: isConfirmedAdmin,
+  });
+
+  const { data: requestsData, isLoading: requestsLoading } = useQuery<{ requests: Request[] }>({
+    queryKey: ["/api/admin/requests"],
     enabled: isConfirmedAdmin,
   });
 
@@ -361,6 +379,33 @@ export default function Admin() {
     },
   });
 
+  const updateRequestStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const response = await apiRequest("PATCH", `/api/admin/requests/${id}/status`, { status });
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Request Updated", description: "Request status has been updated." });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/requests"] });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message || "Failed to update request", variant: "destructive" });
+    },
+  });
+
+  const deleteRequestMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/admin/requests/${id}`);
+    },
+    onSuccess: () => {
+      toast({ title: "Request Deleted", description: "Request has been deleted successfully." });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/requests"] });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message || "Failed to delete request", variant: "destructive" });
+    },
+  });
+
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -409,12 +454,18 @@ export default function Admin() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid grid-cols-3 md:grid-cols-7 gap-2">
+            <TabsList className="grid grid-cols-4 md:grid-cols-8 gap-2">
               <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
               <TabsTrigger value="users" data-testid="tab-users">Users</TabsTrigger>
               <TabsTrigger value="programs" data-testid="tab-programs">Programs</TabsTrigger>
               <TabsTrigger value="events" data-testid="tab-events">Events</TabsTrigger>
               <TabsTrigger value="resources" data-testid="tab-resources">Resources</TabsTrigger>
+              <TabsTrigger value="requests" data-testid="tab-requests">
+                Requests
+                {requestsData?.requests?.filter(r => r.status === 'pending').length ? (
+                  <Badge variant="destructive" className="ml-2 px-1.5 py-0.5 text-xs">{requestsData.requests.filter(r => r.status === 'pending').length}</Badge>
+                ) : null}
+              </TabsTrigger>
               <TabsTrigger value="messages" data-testid="tab-messages">
                 Messages
                 {stats?.unreadMessageCount ? (
@@ -759,6 +810,86 @@ export default function Admin() {
                           </Button>
                         </div>
                       ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="requests">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <ClipboardList className="w-5 h-5" />
+                    Application Requests
+                  </CardTitle>
+                  <CardDescription>Requests submitted via program applications and registrations</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {requestsLoading ? (
+                    <div className="text-center py-8 text-muted-foreground">Loading requests...</div>
+                  ) : !requestsData?.requests?.length ? (
+                    <div className="text-center py-8 text-muted-foreground">No requests yet</div>
+                  ) : (
+                    <div className="space-y-4">
+                      {requestsData.requests.map((req) => {
+                        const messageLines = req.message?.split('\n') || [];
+                        const programInfo = messageLines.find(l => l.startsWith('Application for:') || l.startsWith('Membership Plan:'));
+                        const otherInfo = messageLines.filter(l => !l.startsWith('Application for:') && !l.startsWith('Membership Plan:')).join('\n').trim();
+                        
+                        return (
+                        <div key={req.id} className={`p-4 border rounded-md ${req.status === 'pending' ? 'bg-muted/60 border-primary/30' : 'bg-muted/30'}`} data-testid={`request-${req.id}`}>
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                <span className="font-semibold">{req.name}</span>
+                                <span className="text-muted-foreground text-sm">{req.email}</span>
+                                {req.phone && <span className="text-muted-foreground text-sm">| {req.phone}</span>}
+                                <Badge variant={req.status === 'pending' ? 'default' : req.status === 'approved' ? 'secondary' : 'destructive'}>
+                                  {req.status}
+                                </Badge>
+                              </div>
+                              <div className="flex gap-2 mb-2 flex-wrap">
+                                <Badge variant="outline">{req.requestType.replace(/_/g, ' ')}</Badge>
+                                {req.organization && <Badge variant="secondary">{req.organization}</Badge>}
+                              </div>
+                              {programInfo && <p className="text-sm font-medium mb-1">{programInfo}</p>}
+                              {otherInfo && <p className="text-sm text-muted-foreground whitespace-pre-wrap">{otherInfo}</p>}
+                              <p className="text-xs text-muted-foreground mt-2">{new Date(req.createdAt).toLocaleString()}</p>
+                            </div>
+                            <div className="flex gap-2">
+                              {req.status === 'pending' && (
+                                <>
+                                  <Button 
+                                    variant="outline" 
+                                    size="icon"
+                                    onClick={() => updateRequestStatusMutation.mutate({ id: req.id, status: 'approved' })}
+                                    data-testid={`button-approve-${req.id}`}
+                                  >
+                                    <Check className="w-4 h-4 text-green-600" />
+                                  </Button>
+                                  <Button 
+                                    variant="outline" 
+                                    size="icon"
+                                    onClick={() => updateRequestStatusMutation.mutate({ id: req.id, status: 'rejected' })}
+                                    data-testid={`button-reject-${req.id}`}
+                                  >
+                                    <X className="w-4 h-4 text-red-600" />
+                                  </Button>
+                                </>
+                              )}
+                              <Button variant="destructive" size="icon" onClick={() => {
+                                if (confirm("Delete this request?")) {
+                                  deleteRequestMutation.mutate(req.id);
+                                }
+                              }} data-testid={`button-delete-request-${req.id}`}>
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                        );
+                      })}
                     </div>
                   )}
                 </CardContent>

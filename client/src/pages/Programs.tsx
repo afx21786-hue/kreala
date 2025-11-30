@@ -1,141 +1,123 @@
 import { useState, useRef, useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import {
   Rocket, Users, GraduationCap, Lightbulb, Target, Building2, ArrowRight,
-  Calendar, Clock, MapPin, CheckCircle2
+  Calendar, Clock, MapPin, CheckCircle2, BookOpen
 } from "lucide-react";
 
-// todo: remove mock functionality
-const programs = [
-  {
-    id: "bootcamp",
-    icon: Rocket,
-    title: "Startup Boot Camp",
-    subtitle: "12-Week Intensive Program",
-    description: "Transform your idea into a fundable startup with expert mentorship, investor connections, and hands-on workshops.",
-    color: "kef-teal",
-    category: "Startups",
-    duration: "12 Weeks",
-    nextBatch: "January 2025",
-    features: [
-      "One-on-one mentorship from industry experts",
-      "Access to investor network",
-      "Co-working space access",
-      "Legal and financial advisory",
-      "Demo day with top VCs",
-    ],
-  },
-  {
-    id: "investor",
-    icon: Users,
-    title: "Investor Connect",
-    subtitle: "Funding & Networking",
-    description: "Bridge the gap between promising startups and investors through curated events and networking sessions.",
-    color: "kef-gold",
-    category: "Funding",
-    duration: "Ongoing",
-    nextBatch: "Monthly Events",
-    features: [
-      "Curated investor pitch events",
-      "One-on-one investor meetings",
-      "Pitch deck reviews",
-      "Funding readiness assessment",
-      "Post-funding support",
-    ],
-  },
-  {
-    id: "campus",
-    icon: GraduationCap,
-    title: "Campus Initiatives",
-    subtitle: "Student Entrepreneurship",
-    description: "Empowering students with entrepreneurship skills through workshops, competitions, and incubation support.",
-    color: "kef-red",
-    category: "Education",
-    duration: "Academic Year",
-    nextBatch: "Semester-wise",
-    features: [
-      "Entrepreneurship workshops",
-      "Idea competitions",
-      "Campus incubation support",
-      "Industry mentorship",
-      "Internship opportunities",
-    ],
-  },
-  {
-    id: "innovation",
-    icon: Lightbulb,
-    title: "Innovation Labs",
-    subtitle: "Prototype & Build",
-    description: "Access to state-of-the-art facilities, tools, and resources to prototype and test your ideas.",
-    color: "kef-teal",
-    category: "Resources",
-    duration: "Flexible",
-    nextBatch: "Open Access",
-    features: [
-      "3D printing and prototyping",
-      "Electronics lab access",
-      "Design software licenses",
-      "Technical workshops",
-      "Expert consultations",
-    ],
-  },
-  {
-    id: "market",
-    icon: Target,
-    title: "Market Access",
-    subtitle: "Go-to-Market Support",
-    description: "Connect with potential customers, partners, and distribution channels across Kerala and beyond.",
-    color: "kef-gold",
-    category: "Growth",
-    duration: "6 Months",
-    nextBatch: "Rolling Admissions",
-    features: [
-      "Market research support",
-      "Customer discovery sessions",
-      "B2B matchmaking",
-      "Trade fair participation",
-      "Export facilitation",
-    ],
-  },
-  {
-    id: "corporate",
-    icon: Building2,
-    title: "Corporate Connect",
-    subtitle: "Enterprise Partnerships",
-    description: "Partnership opportunities with established businesses for pilot projects and scaling solutions.",
-    color: "kef-red",
-    category: "Partnerships",
-    duration: "Project-based",
-    nextBatch: "Quarterly Calls",
-    features: [
-      "Corporate pilot programs",
-      "Technology partnerships",
-      "Procurement opportunities",
-      "Co-development projects",
-      "Scale-up funding",
-    ],
-  },
-];
+interface Program {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  image: string | null;
+  isActive: boolean;
+  createdAt: string;
+}
 
-const categories = ["All", "Startups", "Funding", "Education", "Resources", "Growth", "Partnerships"];
+const categoryIcons: Record<string, any> = {
+  startup: Rocket,
+  funding: Users,
+  education: GraduationCap,
+  innovation: Lightbulb,
+  growth: Target,
+  partnership: Building2,
+  default: BookOpen,
+};
+
+const categoryColors: Record<string, string> = {
+  startup: "kef-teal",
+  funding: "kef-gold",
+  education: "kef-red",
+  innovation: "kef-teal",
+  growth: "kef-gold",
+  partnership: "kef-red",
+  default: "primary",
+};
 
 export default function Programs() {
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedProgram, setSelectedProgram] = useState(programs[0]);
+  const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [applyModalOpen, setApplyModalOpen] = useState(false);
+  const [applyForm, setApplyForm] = useState({ name: "", email: "", phone: "", organization: "", message: "" });
   const [visibleCards, setVisibleCards] = useState<number[]>([]);
   const gridRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  const handleApplyProgram = (programTitle: string) => {
-    toast({
-      title: "Application Started!",
-      description: `You're applying for ${programTitle}. Our team will review your application and contact you within 48 hours.`,
+  const { data: programsData, isLoading } = useQuery<{ programs: Program[] }>({
+    queryKey: ["/api/programs"],
+  });
+
+  const programs = programsData?.programs?.filter(p => p.isActive) || [];
+  const categories = ["All", ...Array.from(new Set(programs.map(p => p.category)))];
+
+  const submitRequestMutation = useMutation({
+    mutationFn: async (data: { programId: string; programTitle: string }) => {
+      const response = await apiRequest("POST", "/api/requests", {
+        name: applyForm.name,
+        email: applyForm.email,
+        phone: applyForm.phone || null,
+        organization: applyForm.organization || null,
+        requestType: "program_application",
+        programId: data.programId,
+        message: `Application for: ${data.programTitle}\n\n${applyForm.message || ""}`,
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Application Submitted!",
+        description: "Our team will review your application and contact you within 48 hours.",
+      });
+      setApplyModalOpen(false);
+      setApplyForm({ name: "", email: "", phone: "", organization: "", message: "" });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to submit application. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleApplyProgram = (program: Program) => {
+    setSelectedProgram(program);
+    setApplyModalOpen(true);
+  };
+
+  const handleLearnMore = (program: Program) => {
+    setSelectedProgram(program);
+    setDetailModalOpen(true);
+  };
+
+  const handleSubmitApplication = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedProgram) return;
+    if (!applyForm.name.trim() || !applyForm.email.trim()) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+    submitRequestMutation.mutate({ 
+      programId: selectedProgram.id, 
+      programTitle: selectedProgram.title 
     });
   };
 
@@ -167,6 +149,14 @@ export default function Programs() {
     return () => observer.disconnect();
   }, [filteredPrograms]);
 
+  const getIcon = (category: string) => {
+    return categoryIcons[category.toLowerCase()] || categoryIcons.default;
+  };
+
+  const getColor = (category: string) => {
+    return categoryColors[category.toLowerCase()] || categoryColors.default;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -192,9 +182,20 @@ export default function Programs() {
 
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Tabs defaultValue="grid" className="w-full">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-                <div className="flex flex-wrap gap-2">
+            {isLoading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Loading programs...</p>
+              </div>
+            ) : programs.length === 0 ? (
+              <div className="text-center py-12">
+                <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No Programs Yet</h3>
+                <p className="text-muted-foreground">Check back soon for exciting programs!</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex flex-wrap gap-2 mb-8">
                   {categories.map((category) => (
                     <Button
                       key={category}
@@ -207,139 +208,157 @@ export default function Programs() {
                     </Button>
                   ))}
                 </div>
-                <TabsList>
-                  <TabsTrigger value="grid" data-testid="view-grid">Grid</TabsTrigger>
-                  <TabsTrigger value="detail" data-testid="view-detail">Detail</TabsTrigger>
-                </TabsList>
-              </div>
 
-              <TabsContent value="grid">
                 <div ref={gridRef} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredPrograms.map((program, index) => (
-                    <Card
-                      key={program.id}
-                      data-index={index}
-                      className={`border-0 shadow-sm card-hover-lift group transition-all duration-600 ease-out ${
-                        visibleCards.includes(index)
-                          ? "opacity-100 translate-y-0"
-                          : "opacity-0 translate-y-8"
-                      }`}
-                      style={{ transitionDelay: `${index * 80}ms` }}
-                      data-testid={`card-program-${program.id}`}
-                    >
-                      <CardContent className="p-6">
-                        <div className={`w-12 h-12 rounded-md bg-${program.color}/10 flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3`}>
-                          <program.icon className={`w-6 h-6 text-${program.color}`} />
-                        </div>
-                        <Badge variant="secondary" className="mb-2">{program.category}</Badge>
-                        <h3 className="text-xl font-semibold mb-1 group-hover:text-primary transition-colors">{program.title}</h3>
-                        <p className="text-sm text-primary mb-3">{program.subtitle}</p>
-                        <p className="text-muted-foreground text-sm mb-4">{program.description}</p>
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            {program.duration}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
-                            {program.nextBatch}
-                          </span>
-                        </div>
-                        <Button className="w-full gap-2 group/btn" onClick={() => handleApplyProgram(program.title)} data-testid={`button-apply-${program.id}`}>
-                          Apply Now
-                          <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </TabsContent>
-
-              <TabsContent value="detail">
-                <div className="grid lg:grid-cols-3 gap-8">
-                  <div className="space-y-3">
-                    {filteredPrograms.map((program) => (
+                  {filteredPrograms.map((program, index) => {
+                    const Icon = getIcon(program.category);
+                    const color = getColor(program.category);
+                    return (
                       <Card
                         key={program.id}
-                        className={`cursor-pointer transition-all card-hover-lift group ${
-                          selectedProgram.id === program.id ? "ring-2 ring-primary" : ""
+                        data-index={index}
+                        className={`border-0 shadow-sm card-hover-lift group transition-all duration-600 ease-out ${
+                          visibleCards.includes(index)
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-8"
                         }`}
-                        onClick={() => setSelectedProgram(program)}
-                        data-testid={`select-program-${program.id}`}
+                        style={{ transitionDelay: `${index * 80}ms` }}
+                        data-testid={`card-program-${program.id}`}
                       >
-                        <CardContent className="p-4 flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-md bg-${program.color}/10 flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110`}>
-                            <program.icon className={`w-5 h-5 text-${program.color}`} />
+                        <CardContent className="p-6">
+                          <div className={`w-12 h-12 rounded-md bg-${color}/10 flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3`}>
+                            <Icon className={`w-6 h-6 text-${color}`} />
                           </div>
-                          <div>
-                            <h4 className="font-semibold group-hover:text-primary transition-colors">{program.title}</h4>
-                            <p className="text-xs text-muted-foreground">{program.category}</p>
+                          <Badge variant="secondary" className="mb-2">{program.category}</Badge>
+                          <h3 className="text-xl font-semibold mb-1 group-hover:text-primary transition-colors">{program.title}</h3>
+                          <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{program.description}</p>
+                          <div className="flex gap-2">
+                            <Button 
+                              variant="outline" 
+                              className="flex-1 gap-1"
+                              onClick={() => handleLearnMore(program)}
+                              data-testid={`button-learn-more-${program.id}`}
+                            >
+                              Learn More
+                            </Button>
+                            <Button 
+                              className="flex-1 gap-1 group/btn" 
+                              onClick={() => handleApplyProgram(program)} 
+                              data-testid={`button-apply-${program.id}`}
+                            >
+                              Apply Now
+                              <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
+                            </Button>
                           </div>
                         </CardContent>
                       </Card>
-                    ))}
-                  </div>
-                  <div className="lg:col-span-2">
-                    <Card className="border-0 shadow-md" data-testid="program-detail-view">
-                      <CardHeader>
-                        <div className="flex items-start justify-between gap-4 flex-wrap">
-                          <div>
-                            <Badge variant="secondary" className="mb-2">{selectedProgram.category}</Badge>
-                            <CardTitle className="text-2xl">{selectedProgram.title}</CardTitle>
-                            <p className="text-primary mt-1">{selectedProgram.subtitle}</p>
-                          </div>
-                          <Button className="gap-2" onClick={() => handleApplyProgram(selectedProgram.title)} data-testid="button-apply-detail">
-                            Apply Now
-                            <ArrowRight className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-muted-foreground mb-6">{selectedProgram.description}</p>
-                        
-                        <div className="flex flex-wrap gap-6 mb-8 p-4 bg-muted/50 rounded-md">
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-5 h-5 text-primary" />
-                            <div>
-                              <p className="text-xs text-muted-foreground">Duration</p>
-                              <p className="font-medium">{selectedProgram.duration}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-5 h-5 text-kef-gold" />
-                            <div>
-                              <p className="text-xs text-muted-foreground">Next Batch</p>
-                              <p className="font-medium">{selectedProgram.nextBatch}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <MapPin className="w-5 h-5 text-kef-red" />
-                            <div>
-                              <p className="text-xs text-muted-foreground">Location</p>
-                              <p className="font-medium">Kerala, India</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <h4 className="font-semibold mb-4">What's Included</h4>
-                        <ul className="space-y-3">
-                          {selectedProgram.features.map((feature, index) => (
-                            <li key={index} className="flex items-start gap-3">
-                              <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                              <span className="text-muted-foreground">{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </CardContent>
-                    </Card>
-                  </div>
+                    );
+                  })}
                 </div>
-              </TabsContent>
-            </Tabs>
+              </>
+            )}
           </div>
         </section>
       </main>
       <Footer />
+
+      <Dialog open={detailModalOpen} onOpenChange={setDetailModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl">{selectedProgram?.title}</DialogTitle>
+            <DialogDescription className="flex items-center gap-3 pt-2">
+              <Badge variant="secondary">{selectedProgram?.category}</Badge>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4">
+            <p className="text-muted-foreground leading-relaxed mb-6">
+              {selectedProgram?.description}
+            </p>
+            <Button 
+              className="w-full gap-2"
+              onClick={() => {
+                setDetailModalOpen(false);
+                if (selectedProgram) handleApplyProgram(selectedProgram);
+              }}
+            >
+              Apply for this Program
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={applyModalOpen} onOpenChange={setApplyModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Apply for {selectedProgram?.title}</DialogTitle>
+            <DialogDescription>
+              Fill out the form below to submit your application. We'll get back to you within 48 hours.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmitApplication} className="space-y-4 mt-4">
+            <div>
+              <Label htmlFor="apply-name">Full Name *</Label>
+              <Input 
+                id="apply-name" 
+                value={applyForm.name} 
+                onChange={(e) => setApplyForm({...applyForm, name: e.target.value})}
+                required
+                data-testid="input-apply-name"
+              />
+            </div>
+            <div>
+              <Label htmlFor="apply-email">Email *</Label>
+              <Input 
+                id="apply-email" 
+                type="email"
+                value={applyForm.email} 
+                onChange={(e) => setApplyForm({...applyForm, email: e.target.value})}
+                required
+                data-testid="input-apply-email"
+              />
+            </div>
+            <div>
+              <Label htmlFor="apply-phone">Phone</Label>
+              <Input 
+                id="apply-phone" 
+                value={applyForm.phone} 
+                onChange={(e) => setApplyForm({...applyForm, phone: e.target.value})}
+                data-testid="input-apply-phone"
+              />
+            </div>
+            <div>
+              <Label htmlFor="apply-org">Organization</Label>
+              <Input 
+                id="apply-org" 
+                value={applyForm.organization} 
+                onChange={(e) => setApplyForm({...applyForm, organization: e.target.value})}
+                data-testid="input-apply-organization"
+              />
+            </div>
+            <div>
+              <Label htmlFor="apply-message">Message (Optional)</Label>
+              <Textarea 
+                id="apply-message" 
+                value={applyForm.message} 
+                onChange={(e) => setApplyForm({...applyForm, message: e.target.value})}
+                placeholder="Tell us about yourself and why you're interested..."
+                rows={3}
+                data-testid="textarea-apply-message"
+              />
+            </div>
+            <Button 
+              type="submit" 
+              className="w-full gap-2"
+              disabled={submitRequestMutation.isPending}
+              data-testid="button-submit-application"
+            >
+              {submitRequestMutation.isPending ? "Submitting..." : "Submit Application"}
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
