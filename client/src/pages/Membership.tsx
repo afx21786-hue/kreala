@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +28,8 @@ interface MembershipPlan {
 }
 
 export default function Membership() {
+  const [, setLocation] = useLocation();
+  const { user } = useAuth();
   const [selectedPlan, setSelectedPlan] = useState<MembershipPlan | null>(null);
   const [applyModalOpen, setApplyModalOpen] = useState(false);
   const [applyForm, setApplyForm] = useState({ name: "", email: "", phone: "", organization: "" });
@@ -68,6 +72,15 @@ export default function Membership() {
   });
 
   const handleApply = (plan: MembershipPlan) => {
+    if (!user) {
+      toast({
+        title: "Sign In Required",
+        description: "Please sign in or create an account to apply for membership.",
+        variant: "destructive",
+      });
+      setLocation(`/login?redirect=/membership`);
+      return;
+    }
     setSelectedPlan(plan);
     setApplyModalOpen(true);
   };

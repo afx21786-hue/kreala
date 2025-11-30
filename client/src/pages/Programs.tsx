@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -48,6 +50,8 @@ const categoryColors: Record<string, string> = {
 };
 
 export default function Programs() {
+  const [, setLocation] = useLocation();
+  const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
@@ -95,6 +99,15 @@ export default function Programs() {
   });
 
   const handleApplyProgram = (program: Program) => {
+    if (!user) {
+      toast({
+        title: "Sign In Required",
+        description: "Please sign in or create an account to apply for this program.",
+        variant: "destructive",
+      });
+      setLocation(`/login?redirect=/programs`);
+      return;
+    }
     setSelectedProgram(program);
     setApplyModalOpen(true);
   };
