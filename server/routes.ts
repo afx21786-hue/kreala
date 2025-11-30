@@ -1,6 +1,5 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
-import passport from "passport";
 import { storage } from "./storage";
 import { insertUserSchema } from "@shared/schema";
 import bcrypt from "bcryptjs";
@@ -159,50 +158,11 @@ export async function registerRoutes(
     }
   });
 
-  app.get("/api/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-
-  app.get("/api/auth/google/callback", passport.authenticate("google", { failureRedirect: "/signup" }), (req, res) => {
-    try {
-      const profile = (req.user as any)?.profile || req.user;
-      const email = profile?.emails?.[0]?.value;
-      const name = profile?.displayName;
-
-      if (!email) {
-        return res.redirect("/signup?error=no_email");
-      }
-
-      req.session.regenerate(async (err) => {
-        if (err) {
-          console.error("Session regeneration error:", err);
-          return res.redirect("/signup?error=session_error");
-        }
-
-        try {
-          let user = await storage.getUserByEmail(email);
-
-          if (!user) {
-            const username = email.split("@")[0];
-            user = await storage.createUser({
-              email,
-              name: name || null,
-              username,
-              password: "",
-            });
-          }
-
-          req.session.userId = user.id;
-          req.session.isAdmin = user.isAdmin;
-
-          res.redirect("/dashboard");
-        } catch (error) {
-          console.error("Google auth error:", error);
-          res.redirect("/signup?error=auth_failed");
-        }
-      });
-    } catch (error) {
-      console.error("Google callback error:", error);
-      res.redirect("/signup?error=callback_error");
-    }
+  app.get("/api/auth/google", (req, res) => {
+    const supabaseProjectId = process.env.SUPABASE_PROJECT_ID || '';
+    const origin = req.headers.origin || 'http://localhost:5000';
+    const redirectUrl = `https://${supabaseProjectId}.supabase.co/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(origin)}/dashboard`;
+    res.redirect(redirectUrl);
   });
 
   return httpServer;
