@@ -1,11 +1,10 @@
-import { useRef, useEffect, useState, useCallback } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { AnimatedCard, useScrollAnimation } from "@/components/ui/animated-card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Target, Eye, Heart, Users, Award, Lightbulb, ArrowRight, ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import { Target, Eye, Heart, Users, Award, Lightbulb, ArrowRight } from "lucide-react";
 import aboutImage from "@assets/generated_images/startup_workspace_team_collaboration.png";
 
 const leadership = [
@@ -42,137 +41,37 @@ const values = [
   { icon: Award, title: "Excellence", description: "Maintaining highest standards in all our initiatives" },
 ];
 
-function TeamCarousel() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
+function TeamSection() {
   const { ref, isVisible } = useScrollAnimation();
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  const goToNext = useCallback(() => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    const timer = setTimeout(() => {
-      setCurrentIndex((prev) => (prev + 1) % leadership.length);
-      setIsAnimating(false);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [isAnimating]);
-
-  const goToPrev = useCallback(() => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    const timer = setTimeout(() => {
-      setCurrentIndex((prev) => (prev - 1 + leadership.length) % leadership.length);
-      setIsAnimating(false);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [isAnimating]);
-
-  useEffect(() => {
-    if (!isVisible) return;
-    
-    intervalRef.current = setInterval(() => {
-      if (!isAnimating) {
-        setIsAnimating(true);
-        setTimeout(() => {
-          setCurrentIndex((prev) => (prev + 1) % leadership.length);
-          setIsAnimating(false);
-        }, 300);
-      }
-    }, 6000);
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [isVisible, isAnimating]);
-
-  const currentMember = leadership[currentIndex];
 
   return (
     <div 
       ref={ref}
       className={`transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
     >
-      <Card className="border-0 shadow-lg overflow-hidden bg-gradient-to-br from-background via-background to-muted/30">
-        <CardContent className="p-8 md:p-12">
-          <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-            <div className="flex flex-col items-center md:items-start">
-              <div 
-                className={`relative transition-all duration-500 ${isAnimating ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
-              >
-                <div className="absolute -inset-4 bg-gradient-to-br from-kef-teal/20 via-kef-gold/20 to-kef-red/20 rounded-full blur-xl" />
-                <Avatar className="w-40 h-40 md:w-52 md:h-52 relative border-4 border-white shadow-xl">
-                  <AvatarFallback className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-kef-teal via-kef-gold to-kef-red text-white">
-                    {currentMember.initials}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-              <div 
-                className={`text-center md:text-left mt-6 transition-all duration-500 ${isAnimating ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"}`}
-              >
-                <h3 className="text-2xl font-bold">{currentMember.name}</h3>
-                <p className="text-kef-teal font-medium">{currentMember.role}</p>
-              </div>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {leadership.map((member, index) => (
+          <div 
+            key={member.name}
+            className="flex flex-col items-center text-center"
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
+            <div className="relative mb-4">
+              <div className="absolute -inset-3 bg-gradient-to-br from-kef-teal/20 via-kef-gold/20 to-kef-red/20 rounded-full blur-lg" />
+              <Avatar className="w-28 h-28 relative border-4 border-white shadow-lg">
+                <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-kef-teal via-kef-gold to-kef-red text-white">
+                  {member.initials}
+                </AvatarFallback>
+              </Avatar>
             </div>
-
-            <div className="relative">
-              <Quote className="absolute -top-2 -left-2 w-12 h-12 text-kef-gold/30" />
-              <blockquote 
-                className={`text-lg md:text-xl text-muted-foreground italic leading-relaxed pl-8 transition-all duration-500 ${isAnimating ? "opacity-0 translate-x-4" : "opacity-100 translate-x-0"}`}
-              >
-                "{currentMember.quote}"
-              </blockquote>
-            </div>
+            <h3 className="text-lg font-bold">{member.name}</h3>
+            <p className="text-kef-teal font-medium text-sm mb-3">{member.role}</p>
+            <p className="text-sm text-muted-foreground italic leading-relaxed">
+              "{member.quote}"
+            </p>
           </div>
-
-          <div className="flex items-center justify-center gap-6 mt-10">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={goToPrev}
-              className="rounded-full"
-              data-testid="button-team-prev"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            
-            <div className="flex gap-2">
-              {leadership.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    if (!isAnimating) {
-                      setIsAnimating(true);
-                      setTimeout(() => {
-                        setCurrentIndex(index);
-                        setIsAnimating(false);
-                      }, 300);
-                    }
-                  }}
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    index === currentIndex 
-                      ? "w-8 bg-gradient-to-r from-kef-teal to-kef-gold" 
-                      : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-                  }`}
-                  data-testid={`button-team-dot-${index}`}
-                />
-              ))}
-            </div>
-
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={goToNext}
-              className="rounded-full"
-              data-testid="button-team-next"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+        ))}
+      </div>
     </div>
   );
 }
@@ -303,7 +202,7 @@ export default function About() {
               </p>
             </div>
 
-            <TeamCarousel />
+            <TeamSection />
           </div>
         </section>
       </main>
