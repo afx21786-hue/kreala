@@ -11,7 +11,6 @@ import Home from "@/pages/Home";
 import About from "@/pages/About";
 import Programs from "@/pages/Programs";
 import Events from "@/pages/Events";
-import Membership from "@/pages/Membership";
 import Resources from "@/pages/Resources";
 import Partners from "@/pages/Partners";
 import Contact from "@/pages/Contact";
@@ -97,7 +96,6 @@ function Router() {
         <Route path="/about" component={About} />
         <Route path="/programs" component={Programs} />
         <Route path="/events" component={Events} />
-        <Route path="/membership" component={Membership} />
         <Route path="/resources" component={Resources} />
         <Route path="/partners" component={Partners} />
         <Route path="/contact" component={Contact} />

@@ -59,10 +59,10 @@ export default function CTASection() {
             <Button 
               size="lg" 
               className="gap-2 group" 
-              onClick={() => navigate("/membership")}
+              onClick={() => navigate("/signup")}
               data-testid="button-cta-join"
             >
-              Become a Member
+              Join the Forum
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Button>
             <Button

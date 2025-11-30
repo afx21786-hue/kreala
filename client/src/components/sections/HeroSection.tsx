@@ -73,7 +73,7 @@ export default function HeroSection() {
             <Button 
               size="lg" 
               className="gap-2 group" 
-              onClick={() => navigate("/membership")}
+              onClick={() => navigate("/signup")}
               data-testid="button-hero-join"
             >
               Join the Forum
