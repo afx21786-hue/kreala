@@ -1,7 +1,14 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertUserSchema } from "@shared/schema";
+import { 
+  insertUserSchema, 
+  insertProgramSchema, 
+  insertEventSchema, 
+  insertResourceSchema, 
+  insertMembershipSchema, 
+  insertContactMessageSchema 
+} from "@shared/schema";
 import bcrypt from "bcryptjs";
 
 export async function registerRoutes(
@@ -87,7 +94,7 @@ export async function registerRoutes(
           email,
           name: name || null,
           username: username,
-          password: "", // OAuth users don't have passwords
+          password: "",
         });
       }
 
@@ -185,14 +192,301 @@ export async function registerRoutes(
     try {
       const users = await storage.getAllUsers();
       const adminUsers = await storage.getAdminUsers();
+      const programs = await storage.getPrograms();
+      const events = await storage.getEvents();
+      const resources = await storage.getResources();
+      const memberships = await storage.getMemberships();
+      const messages = await storage.getContactMessages();
+      const unreadMessages = messages.filter(m => !m.isRead).length;
+
       res.json({
         totalUsers: users.length,
         adminCount: adminUsers.length,
+        programCount: programs.length,
+        eventCount: events.length,
+        resourceCount: resources.length,
+        membershipCount: memberships.length,
+        messageCount: messages.length,
+        unreadMessageCount: unreadMessages,
         recentSignups: users.slice(-5).map(({ password, ...user }) => user),
       });
     } catch (error) {
       console.error("Get stats error:", error);
       res.status(500).json({ error: "Failed to fetch stats" });
+    }
+  });
+
+  app.get("/api/programs", async (req, res) => {
+    try {
+      const programs = await storage.getPrograms();
+      res.json({ programs });
+    } catch (error) {
+      console.error("Get programs error:", error);
+      res.status(500).json({ error: "Failed to fetch programs" });
+    }
+  });
+
+  app.get("/api/programs/:id", async (req, res) => {
+    try {
+      const program = await storage.getProgram(req.params.id);
+      if (!program) {
+        return res.status(404).json({ error: "Program not found" });
+      }
+      res.json({ program });
+    } catch (error) {
+      console.error("Get program error:", error);
+      res.status(500).json({ error: "Failed to fetch program" });
+    }
+  });
+
+  app.post("/api/admin/programs", requireAdmin, async (req, res) => {
+    try {
+      const parsed = insertProgramSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid input", details: parsed.error.errors });
+      }
+      const program = await storage.createProgram(parsed.data);
+      res.status(201).json({ program });
+    } catch (error) {
+      console.error("Create program error:", error);
+      res.status(500).json({ error: "Failed to create program" });
+    }
+  });
+
+  app.patch("/api/admin/programs/:id", requireAdmin, async (req, res) => {
+    try {
+      const program = await storage.updateProgram(req.params.id, req.body);
+      if (!program) {
+        return res.status(404).json({ error: "Program not found" });
+      }
+      res.json({ program });
+    } catch (error) {
+      console.error("Update program error:", error);
+      res.status(500).json({ error: "Failed to update program" });
+    }
+  });
+
+  app.delete("/api/admin/programs/:id", requireAdmin, async (req, res) => {
+    try {
+      await storage.deleteProgram(req.params.id);
+      res.json({ message: "Program deleted" });
+    } catch (error) {
+      console.error("Delete program error:", error);
+      res.status(500).json({ error: "Failed to delete program" });
+    }
+  });
+
+  app.get("/api/events", async (req, res) => {
+    try {
+      const events = await storage.getEvents();
+      res.json({ events });
+    } catch (error) {
+      console.error("Get events error:", error);
+      res.status(500).json({ error: "Failed to fetch events" });
+    }
+  });
+
+  app.get("/api/events/:id", async (req, res) => {
+    try {
+      const event = await storage.getEvent(req.params.id);
+      if (!event) {
+        return res.status(404).json({ error: "Event not found" });
+      }
+      res.json({ event });
+    } catch (error) {
+      console.error("Get event error:", error);
+      res.status(500).json({ error: "Failed to fetch event" });
+    }
+  });
+
+  app.post("/api/admin/events", requireAdmin, async (req, res) => {
+    try {
+      const parsed = insertEventSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid input", details: parsed.error.errors });
+      }
+      const event = await storage.createEvent(parsed.data);
+      res.status(201).json({ event });
+    } catch (error) {
+      console.error("Create event error:", error);
+      res.status(500).json({ error: "Failed to create event" });
+    }
+  });
+
+  app.patch("/api/admin/events/:id", requireAdmin, async (req, res) => {
+    try {
+      const event = await storage.updateEvent(req.params.id, req.body);
+      if (!event) {
+        return res.status(404).json({ error: "Event not found" });
+      }
+      res.json({ event });
+    } catch (error) {
+      console.error("Update event error:", error);
+      res.status(500).json({ error: "Failed to update event" });
+    }
+  });
+
+  app.delete("/api/admin/events/:id", requireAdmin, async (req, res) => {
+    try {
+      await storage.deleteEvent(req.params.id);
+      res.json({ message: "Event deleted" });
+    } catch (error) {
+      console.error("Delete event error:", error);
+      res.status(500).json({ error: "Failed to delete event" });
+    }
+  });
+
+  app.get("/api/resources", async (req, res) => {
+    try {
+      const resources = await storage.getResources();
+      res.json({ resources });
+    } catch (error) {
+      console.error("Get resources error:", error);
+      res.status(500).json({ error: "Failed to fetch resources" });
+    }
+  });
+
+  app.get("/api/resources/:id", async (req, res) => {
+    try {
+      const resource = await storage.getResource(req.params.id);
+      if (!resource) {
+        return res.status(404).json({ error: "Resource not found" });
+      }
+      res.json({ resource });
+    } catch (error) {
+      console.error("Get resource error:", error);
+      res.status(500).json({ error: "Failed to fetch resource" });
+    }
+  });
+
+  app.post("/api/admin/resources", requireAdmin, async (req, res) => {
+    try {
+      const parsed = insertResourceSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid input", details: parsed.error.errors });
+      }
+      const resource = await storage.createResource(parsed.data);
+      res.status(201).json({ resource });
+    } catch (error) {
+      console.error("Create resource error:", error);
+      res.status(500).json({ error: "Failed to create resource" });
+    }
+  });
+
+  app.patch("/api/admin/resources/:id", requireAdmin, async (req, res) => {
+    try {
+      const resource = await storage.updateResource(req.params.id, req.body);
+      if (!resource) {
+        return res.status(404).json({ error: "Resource not found" });
+      }
+      res.json({ resource });
+    } catch (error) {
+      console.error("Update resource error:", error);
+      res.status(500).json({ error: "Failed to update resource" });
+    }
+  });
+
+  app.delete("/api/admin/resources/:id", requireAdmin, async (req, res) => {
+    try {
+      await storage.deleteResource(req.params.id);
+      res.json({ message: "Resource deleted" });
+    } catch (error) {
+      console.error("Delete resource error:", error);
+      res.status(500).json({ error: "Failed to delete resource" });
+    }
+  });
+
+  app.get("/api/admin/memberships", requireAdmin, async (req, res) => {
+    try {
+      const memberships = await storage.getMemberships();
+      res.json({ memberships });
+    } catch (error) {
+      console.error("Get memberships error:", error);
+      res.status(500).json({ error: "Failed to fetch memberships" });
+    }
+  });
+
+  app.post("/api/admin/memberships", requireAdmin, async (req, res) => {
+    try {
+      const parsed = insertMembershipSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid input", details: parsed.error.errors });
+      }
+      const membership = await storage.createMembership(parsed.data);
+      res.status(201).json({ membership });
+    } catch (error) {
+      console.error("Create membership error:", error);
+      res.status(500).json({ error: "Failed to create membership" });
+    }
+  });
+
+  app.patch("/api/admin/memberships/:id", requireAdmin, async (req, res) => {
+    try {
+      const membership = await storage.updateMembership(req.params.id, req.body);
+      if (!membership) {
+        return res.status(404).json({ error: "Membership not found" });
+      }
+      res.json({ membership });
+    } catch (error) {
+      console.error("Update membership error:", error);
+      res.status(500).json({ error: "Failed to update membership" });
+    }
+  });
+
+  app.delete("/api/admin/memberships/:id", requireAdmin, async (req, res) => {
+    try {
+      await storage.deleteMembership(req.params.id);
+      res.json({ message: "Membership deleted" });
+    } catch (error) {
+      console.error("Delete membership error:", error);
+      res.status(500).json({ error: "Failed to delete membership" });
+    }
+  });
+
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const parsed = insertContactMessageSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid input", details: parsed.error.errors });
+      }
+      const message = await storage.createContactMessage(parsed.data);
+      res.status(201).json({ message: "Message sent successfully" });
+    } catch (error) {
+      console.error("Create contact message error:", error);
+      res.status(500).json({ error: "Failed to send message" });
+    }
+  });
+
+  app.get("/api/admin/messages", requireAdmin, async (req, res) => {
+    try {
+      const messages = await storage.getContactMessages();
+      res.json({ messages });
+    } catch (error) {
+      console.error("Get messages error:", error);
+      res.status(500).json({ error: "Failed to fetch messages" });
+    }
+  });
+
+  app.patch("/api/admin/messages/:id/read", requireAdmin, async (req, res) => {
+    try {
+      const message = await storage.markMessageAsRead(req.params.id);
+      if (!message) {
+        return res.status(404).json({ error: "Message not found" });
+      }
+      res.json({ message });
+    } catch (error) {
+      console.error("Mark message read error:", error);
+      res.status(500).json({ error: "Failed to mark message as read" });
+    }
+  });
+
+  app.delete("/api/admin/messages/:id", requireAdmin, async (req, res) => {
+    try {
+      await storage.deleteContactMessage(req.params.id);
+      res.json({ message: "Message deleted" });
+    } catch (error) {
+      console.error("Delete message error:", error);
+      res.status(500).json({ error: "Failed to delete message" });
     }
   });
 
