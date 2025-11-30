@@ -1,4 +1,4 @@
-import kefLogoImage from "@assets/KEF-removebg-preview_1764485227046.png";
+import kefLogoImage from "@assets/IMG_3385-removebg-preview_1764497325569.png";
 
 export function KEFLogo({ className = "h-16 w-auto" }: { className?: string }) {
   return (
