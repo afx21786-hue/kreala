@@ -52,9 +52,9 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-24">
+        <div className="flex items-center justify-between h-20 md:h-32 lg:h-40">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="link-logo">
-            <KEFLogo className="h-12 md:h-20 w-auto" />
+            <KEFLogo className="h-16 md:h-28 lg:h-36 w-auto" />
           </Link>
 
           <div className="hidden lg:flex items-center gap-1">
