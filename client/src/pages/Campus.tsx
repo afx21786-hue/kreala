@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -108,6 +109,8 @@ const successStories = [
 ];
 
 export default function Campus() {
+  const [, navigate] = useLocation();
+  
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -279,7 +282,12 @@ export default function Campus() {
               Whether you're a student with an idea or a college looking to foster entrepreneurship, we're here to help.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Button size="lg" className="gap-2" data-testid="button-campus-contact">
+              <Button 
+                size="lg" 
+                className="gap-2" 
+                onClick={() => navigate("/contact")}
+                data-testid="button-campus-contact"
+              >
                 Get in Touch
                 <ArrowRight className="w-4 h-4" />
               </Button>
@@ -287,6 +295,7 @@ export default function Campus() {
                 size="lg"
                 variant="outline"
                 className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+                onClick={() => navigate("/resources")}
                 data-testid="button-download-brochure"
               >
                 Download Brochure

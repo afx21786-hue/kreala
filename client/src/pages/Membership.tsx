@@ -8,65 +8,117 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, Star, Zap, Crown, ArrowRight } from "lucide-react";
+import { CheckCircle2, Star, Zap, Crown, ArrowRight, Rocket, GraduationCap, TrendingUp, Users, Building2, LibraryBig } from "lucide-react";
 
 // todo: remove mock functionality
 const plans = [
   {
-    id: "starter",
-    name: "Starter",
-    description: "Perfect for aspiring entrepreneurs",
+    id: "startup-founder",
+    name: "Startup Founder",
+    description: "For entrepreneurs building their startups",
+    monthlyPrice: 499,
+    yearlyPrice: 4999,
+    icon: Rocket,
+    popular: true,
+    features: [
+      "Access to all KEF programs",
+      "Investor network access",
+      "Mentorship matching",
+      "Co-working space discounts",
+      "Pitch opportunities",
+      "Business advisory sessions",
+    ],
+    cta: "Join Now",
+  },
+  {
+    id: "student-innovator",
+    name: "Student Innovator",
+    description: "For students with entrepreneurial ambitions",
     monthlyPrice: 0,
     yearlyPrice: 0,
-    icon: Star,
+    icon: GraduationCap,
     popular: false,
     features: [
-      "Access to community events",
-      "Newsletter & updates",
-      "Basic resource library",
+      "Campus program access",
+      "Workshops & training",
+      "Internship opportunities",
+      "Competition eligibility",
       "Online community access",
       "Monthly webinars",
     ],
     cta: "Join Free",
   },
   {
-    id: "professional",
-    name: "Professional",
-    description: "For serious entrepreneurs",
-    monthlyPrice: 999,
-    yearlyPrice: 9999,
-    icon: Zap,
-    popular: true,
-    features: [
-      "Everything in Starter",
-      "Priority event registration",
-      "Mentorship matching",
-      "Exclusive workshops",
-      "Investor introductions",
-      "Co-working discounts",
-      "Program fee discounts",
-    ],
-    cta: "Get Started",
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise",
-    description: "For established startups",
-    monthlyPrice: 4999,
-    yearlyPrice: 49999,
-    icon: Crown,
+    id: "investor-angel",
+    name: "Investor / Angel",
+    description: "For investors seeking opportunities",
+    monthlyPrice: 2999,
+    yearlyPrice: 29999,
+    icon: TrendingUp,
     popular: false,
     features: [
-      "Everything in Professional",
-      "Dedicated success manager",
-      "Custom program access",
-      "Speaking opportunities",
-      "VIP networking events",
-      "Corporate connections",
-      "PR & media support",
-      "Board advisory access",
+      "Curated deal flow access",
+      "Demo day VIP access",
+      "Due diligence support",
+      "Exclusive investor events",
+      "Portfolio company support",
+      "Co-investment opportunities",
     ],
-    cta: "Contact Sales",
+    cta: "Join Network",
+  },
+  {
+    id: "mentor-expert",
+    name: "Mentor / Expert",
+    description: "For professionals wanting to give back",
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    icon: Users,
+    popular: false,
+    features: [
+      "Mentee matching",
+      "Speaking opportunities",
+      "Expert panel invitations",
+      "Industry visibility",
+      "Networking events",
+      "Recognition & awards",
+    ],
+    cta: "Apply to Mentor",
+  },
+  {
+    id: "corporate-partner",
+    name: "Corporate Partner",
+    description: "For companies supporting startups",
+    monthlyPrice: 9999,
+    yearlyPrice: 99999,
+    icon: Building2,
+    popular: false,
+    features: [
+      "Innovation scouting",
+      "Pilot project access",
+      "Talent pipeline",
+      "Brand visibility",
+      "Custom programs",
+      "CSR partnership opportunities",
+    ],
+    cta: "Partner With Us",
+  },
+  {
+    id: "academic-institution",
+    name: "Academic Institution",
+    description: "For colleges and universities",
+    monthlyPrice: 4999,
+    yearlyPrice: 49999,
+    icon: LibraryBig,
+    popular: false,
+    features: [
+      "Campus ambassador program",
+      "E-Cell support",
+      "Faculty training",
+      "Student internship placement",
+      "Incubation partnership",
+      "Research collaboration",
+    ],
+    cta: "Join as Institution",
   },
 ];
 
@@ -157,7 +209,7 @@ export default function Membership() {
 
         <section className="py-16" ref={sectionRef}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {plans.map((plan, index) => (
                 <Card
                   key={plan.id}

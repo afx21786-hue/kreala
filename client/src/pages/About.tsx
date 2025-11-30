@@ -1,12 +1,46 @@
 import { useEffect, useState, useRef } from "react";
+import { useLocation } from "wouter";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { AnimatedCard, useScrollAnimation } from "@/components/ui/animated-card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Target, Eye, Heart, Users, Award, Lightbulb, ArrowRight, Quote } from "lucide-react";
+import { Target, Eye, Heart, Users, Award, Lightbulb, ArrowRight, Quote, CheckCircle2, TrendingUp, GraduationCap, Building2 } from "lucide-react";
 import aboutImage from "@assets/generated_images/startup_workspace_team_collaboration.png";
+
+const whyKeralaNeeds = [
+  {
+    icon: GraduationCap,
+    title: "Kerala's Youth Talent",
+    description: "Kerala has a highly educated youth population with immense entrepreneurial potential waiting to be unlocked."
+  },
+  {
+    icon: Users,
+    title: "Lack of Unified Ecosystem",
+    description: "Despite individual efforts, Kerala lacks a unified platform that brings together all stakeholders in the startup ecosystem."
+  },
+  {
+    icon: TrendingUp,
+    title: "Difficulty Accessing Investors",
+    description: "Many promising startups struggle to connect with the right investors and funding opportunities."
+  },
+  {
+    icon: Lightbulb,
+    title: "Campus Ideas Not Converting",
+    description: "Brilliant ideas generated in campuses often fail to convert into viable startups due to lack of support."
+  },
+  {
+    icon: Building2,
+    title: "Need for Networks and Mentoring",
+    description: "Entrepreneurs need strong networks and continuous mentoring to navigate the challenges of building a business."
+  },
+  {
+    icon: Target,
+    title: "Economic Upliftment Potential",
+    description: "A thriving startup ecosystem can drive significant economic growth and create employment opportunities across Kerala."
+  },
+];
 
 const leadership = [
   { 
@@ -109,6 +143,7 @@ function TeamSection() {
 export default function About() {
   const { ref: missionRef, isVisible: missionVisible } = useScrollAnimation();
   const { ref: valuesRef, isVisible: valuesVisible } = useScrollAnimation();
+  const [, navigate] = useLocation();
 
   return (
     <div className="min-h-screen bg-background">
@@ -133,7 +168,12 @@ export default function About() {
                 <p className="text-muted-foreground mb-8">
                   We exist to help Kerala move forward—economically, socially, and technologically—through innovation, entrepreneurship, collaboration, and opportunities for all.
                 </p>
-                <Button size="lg" className="gap-2" data-testid="button-about-join">
+                <Button 
+                  size="lg" 
+                  className="gap-2" 
+                  onClick={() => navigate("/membership")}
+                  data-testid="button-about-join"
+                >
                   Join Our Mission
                   <ArrowRight className="w-4 h-4" />
                 </Button>
@@ -166,11 +206,15 @@ export default function About() {
                   </div>
                   <h3 className="text-2xl font-bold mb-4">Our Mission</h3>
                   <ul className="text-muted-foreground space-y-2 text-sm">
-                    <li>• To empower startups at every stage—from idea to scale</li>
-                    <li>• To build Kerala's largest interconnected entrepreneur community</li>
-                    <li>• To strengthen student entrepreneurship and campus innovation</li>
-                    <li>• To conduct transformative business events and conclaves</li>
-                    <li>• To offer continuous business advisory and expert mentorship</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-kef-teal shrink-0 mt-0.5" /> To empower startups at every stage—from idea to scale</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-kef-teal shrink-0 mt-0.5" /> To build Kerala's largest interconnected entrepreneur community</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-kef-teal shrink-0 mt-0.5" /> To strengthen student entrepreneurship and campus innovation</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-kef-teal shrink-0 mt-0.5" /> To conduct transformative business events and conclaves</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-kef-teal shrink-0 mt-0.5" /> To offer continuous business advisory and expert mentorship</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-kef-teal shrink-0 mt-0.5" /> To connect entrepreneurs with angel investors and venture capital</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-kef-teal shrink-0 mt-0.5" /> To support local and rural businesses with branding and market access</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-kef-teal shrink-0 mt-0.5" /> To promote collaboration, partnerships, and growth opportunities</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-kef-teal shrink-0 mt-0.5" /> To provide economic insights and policy recommendations</li>
                   </ul>
                 </CardContent>
               </AnimatedCard>
@@ -237,6 +281,39 @@ export default function About() {
             </div>
 
             <TeamSection />
+          </div>
+        </section>
+
+        <section className="py-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <span className="inline-block px-4 py-1 rounded-full bg-kef-teal/10 text-kef-teal text-sm font-medium mb-4">
+                Our Purpose
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Why Kerala Needs{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-kef-teal via-kef-gold to-kef-red">
+                  KEF
+                </span>
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Kerala has immense potential that needs a unified platform to flourish.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {whyKeralaNeeds.map((item, index) => (
+                <Card key={item.title} className="border-0 shadow-sm" data-testid={`card-why-${index}`}>
+                  <CardContent className="p-6">
+                    <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center mb-4">
+                      <item.icon className="w-6 h-6 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+                    <p className="text-sm text-muted-foreground">{item.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         </section>
       </main>

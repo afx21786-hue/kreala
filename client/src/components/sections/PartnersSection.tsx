@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from "react";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
@@ -19,6 +20,7 @@ const partners = [
 export default function PartnersSection() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [, navigate] = useLocation();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -93,7 +95,12 @@ export default function PartnersSection() {
                 Join our network and help shape Kerala's entrepreneurial future.
               </p>
             </div>
-            <Button size="lg" className="gap-2 shrink-0" data-testid="button-become-partner">
+            <Button 
+              size="lg" 
+              className="gap-2 shrink-0" 
+              onClick={() => navigate("/partners")}
+              data-testid="button-become-partner"
+            >
               Partner With Us
               <ArrowRight className="w-4 h-4" />
             </Button>

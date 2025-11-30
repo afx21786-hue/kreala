@@ -1,11 +1,12 @@
 import { useRef, useEffect, useState } from "react";
-import { Link } from "wouter";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 export default function CTASection() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [, navigate] = useLocation();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -55,22 +56,24 @@ export default function CTASection() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/membership">
-              <Button size="lg" className="gap-2 group" data-testid="button-cta-join">
-                Become a Member
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </Button>
-            </Link>
-            <Link href="/contact">
-              <Button
-                size="lg"
-                variant="outline"
-                className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
-                data-testid="button-cta-contact"
-              >
-                Contact Us
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              className="gap-2 group" 
+              onClick={() => navigate("/membership")}
+              data-testid="button-cta-join"
+            >
+              Become a Member
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+              onClick={() => navigate("/contact")}
+              data-testid="button-cta-contact"
+            >
+              Contact Us
+            </Button>
           </div>
         </div>
       </div>

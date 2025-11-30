@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from "react";
+import { useLocation } from "wouter";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -108,6 +109,7 @@ const partnershipTypes = [
 export default function Partners() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [, navigate] = useLocation();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -262,7 +264,12 @@ export default function Partners() {
             <p className="text-background/70 mb-8">
               Let's discuss how we can create meaningful impact together.
             </p>
-            <Button size="lg" className="gap-2" data-testid="button-partner-contact">
+            <Button 
+              size="lg" 
+              className="gap-2" 
+              onClick={() => navigate("/contact")}
+              data-testid="button-partner-contact"
+            >
               Contact Our Partnership Team
               <ArrowRight className="w-4 h-4" />
             </Button>

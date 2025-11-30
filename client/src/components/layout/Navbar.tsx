@@ -82,25 +82,27 @@ export default function Navbar() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start">
                     {item.dropdown.map((subItem) => (
-                      <DropdownMenuItem key={subItem.href} asChild>
-                        <Link href={subItem.href} data-testid={`nav-${subItem.label.toLowerCase().replace(/\s/g, "-")}`}>
-                          {subItem.label}
-                        </Link>
+                      <DropdownMenuItem 
+                        key={subItem.href} 
+                        onClick={() => setLocation(subItem.href)}
+                        data-testid={`nav-${subItem.label.toLowerCase().replace(/\s/g, "-")}`}
+                      >
+                        {subItem.label}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Link key={item.href} href={item.href}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className={location === item.href ? "text-primary" : ""}
-                    data-testid={`nav-${item.label.toLowerCase().replace(/\s/g, "-")}`}
-                  >
-                    {item.label}
-                  </Button>
-                </Link>
+                <Button
+                  key={item.href}
+                  variant="ghost"
+                  size="sm"
+                  className={location === item.href ? "text-primary" : ""}
+                  onClick={() => setLocation(item.href)}
+                  data-testid={`nav-${item.label.toLowerCase().replace(/\s/g, "-")}`}
+                >
+                  {item.label}
+                </Button>
               )
             )}
           </div>
@@ -134,16 +136,21 @@ export default function Navbar() {
                 </DropdownMenu>
               ) : (
                 <>
-                  <Link href="/membership">
-                    <Button variant="outline" size="sm" data-testid="button-get-started">
-                      Get Started
-                    </Button>
-                  </Link>
-                  <Link href="/membership">
-                    <Button size="sm" data-testid="button-join">
-                      Join KEF
-                    </Button>
-                  </Link>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setLocation("/membership")}
+                    data-testid="button-get-started"
+                  >
+                    Get Started
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    onClick={() => setLocation("/membership")}
+                    data-testid="button-join"
+                  >
+                    Join KEF
+                  </Button>
                 </>
               )
             )}
@@ -158,30 +165,34 @@ export default function Navbar() {
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <div className="flex flex-col gap-4 mt-8">
                 {navItems.map((item) => (
-                  <Link
+                  <Button
                     key={item.href}
-                    href={item.href}
-                    onClick={() => setIsOpen(false)}
+                    variant="ghost"
+                    className={`w-full justify-start ${location === item.href ? "text-primary bg-primary/5" : ""}`}
+                    onClick={() => {
+                      setLocation(item.href);
+                      setIsOpen(false);
+                    }}
                     data-testid={`mobile-nav-${item.label.toLowerCase().replace(/\s/g, "-")}`}
                   >
-                    <Button
-                      variant="ghost"
-                      className={`w-full justify-start ${location === item.href ? "text-primary bg-primary/5" : ""}`}
-                    >
-                      {item.label}
-                    </Button>
-                  </Link>
+                    {item.label}
+                  </Button>
                 ))}
                 <div className="flex flex-col gap-2 mt-4 pt-4 border-t">
                   {!loading && (
                     user ? (
                       <>
-                        <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-                          <Button variant="outline" className="w-full">
-                            <User className="w-4 h-4 mr-2" />
-                            Dashboard
-                          </Button>
-                        </Link>
+                        <Button 
+                          variant="outline" 
+                          className="w-full"
+                          onClick={() => {
+                            setLocation("/dashboard");
+                            setIsOpen(false);
+                          }}
+                        >
+                          <User className="w-4 h-4 mr-2" />
+                          Dashboard
+                        </Button>
                         <Button 
                           variant="ghost" 
                           className="w-full text-red-600"
@@ -196,16 +207,27 @@ export default function Navbar() {
                       </>
                     ) : (
                       <>
-                        <Link href="/membership" onClick={() => setIsOpen(false)}>
-                          <Button variant="outline" className="w-full" data-testid="mobile-button-get-started">
-                            Get Started
-                          </Button>
-                        </Link>
-                        <Link href="/membership" onClick={() => setIsOpen(false)}>
-                          <Button className="w-full" data-testid="mobile-button-join">
-                            Join KEF
-                          </Button>
-                        </Link>
+                        <Button 
+                          variant="outline" 
+                          className="w-full" 
+                          onClick={() => {
+                            setLocation("/membership");
+                            setIsOpen(false);
+                          }}
+                          data-testid="mobile-button-get-started"
+                        >
+                          Get Started
+                        </Button>
+                        <Button 
+                          className="w-full" 
+                          onClick={() => {
+                            setLocation("/membership");
+                            setIsOpen(false);
+                          }}
+                          data-testid="mobile-button-join"
+                        >
+                          Join KEF
+                        </Button>
                       </>
                     )
                   )}

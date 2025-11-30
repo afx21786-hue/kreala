@@ -1,25 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "wouter";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { ArrowRight } from "lucide-react";
 import heroImage from "@assets/generated_images/kerala_modern_cityscape_hero.png";
 
 export default function HeroSection() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
+  const [, navigate] = useLocation();
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
-
-  const handleVideo = () => {
-    toast({
-      title: "Video Coming Soon",
-      description: "We're preparing an exclusive video tour for you.",
-    });
-  };
 
   return (
     <section ref={sectionRef} className="relative min-h-screen flex items-center overflow-hidden">
@@ -70,23 +62,40 @@ export default function HeroSection() {
           <div
             className={`flex flex-wrap gap-4 transition-all duration-700 delay-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
           >
-            <Link href="/membership">
-              <Button size="lg" className="gap-2 group" data-testid="button-hero-join">
-                Join Our Community
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              className="gap-2 group" 
+              onClick={() => navigate("/membership")}
+              data-testid="button-hero-join"
+            >
+              Join the Forum
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </Button>
             <Button
               size="lg"
               variant="outline"
               className="gap-2 bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
-              onClick={handleVideo}
-              data-testid="button-hero-watch"
+              onClick={() => navigate("/programs")}
+              data-testid="button-hero-programs"
             >
-              <Play className="w-4 h-4" />
-              Watch Video
+              Explore Our Programs
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="gap-2 bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+              onClick={() => navigate("/partners")}
+              data-testid="button-hero-partner"
+            >
+              Partner With Us
             </Button>
           </div>
+
+          <p
+            className={`text-white/60 text-sm mt-6 transition-all duration-700 delay-400 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+          >
+            Where ideas grow. Where founders rise. Where Kerala transforms.
+          </p>
 
           <div
             className={`grid grid-cols-3 gap-8 mt-16 pt-8 border-t border-white/10 transition-all duration-700 delay-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}

@@ -1,8 +1,10 @@
 import { useRef, useEffect, useState } from "react";
+import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, ArrowRight, Clock, Users } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import eventImage from "@assets/generated_images/premium_business_conference_stage.png";
 
 // todo: remove mock functionality
@@ -53,6 +55,15 @@ const events = [
 export default function EventsSection() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [, navigate] = useLocation();
+  const { toast } = useToast();
+
+  const handleRegister = (eventTitle: string) => {
+    toast({
+      title: "Registration Started!",
+      description: `You're registering for ${eventTitle}. We'll send confirmation to your email soon.`,
+    });
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -89,8 +100,13 @@ export default function EventsSection() {
               </span>
             </h2>
           </div>
-          <Button variant="outline" className="gap-2 self-start md:self-auto" data-testid="button-view-all-events">
-            View All Events
+          <Button 
+            variant="outline" 
+            className="gap-2 self-start md:self-auto" 
+            onClick={() => navigate("/events")}
+            data-testid="button-view-all-events"
+          >
+            Explore All Events
             <ArrowRight className="w-4 h-4" />
           </Button>
         </div>
@@ -134,7 +150,7 @@ export default function EventsSection() {
                     {featuredEvent.attendees}+ Expected
                   </div>
                 </div>
-                <Button className="w-full" data-testid="button-register-featured-event">
+                <Button className="w-full" onClick={() => handleRegister(featuredEvent.title)} data-testid="button-register-featured-event">
                   Register Now
                 </Button>
               </CardContent>
@@ -178,7 +194,7 @@ export default function EventsSection() {
                       </span>
                     </div>
                   </div>
-                  <Button size="sm" variant="outline" data-testid={`button-register-event-${event.id}`}>
+                  <Button size="sm" variant="outline" onClick={() => handleRegister(event.title)} data-testid={`button-register-event-${event.id}`}>
                     Register
                   </Button>
                 </CardContent>

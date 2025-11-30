@@ -79,8 +79,9 @@ export default function Contact() {
                       <h3 className="font-semibold mb-1">Visit Us</h3>
                       <p className="text-sm text-muted-foreground">
                         Kerala Economic Forum<br />
-                        Technopark Phase III, Building 1<br />
-                        Thiruvananthapuram, Kerala 695581
+                        Level 3, Venture Arcade, Mavoor Rd,<br />
+                        above Croma, Thondayad,<br />
+                        Kozhikode, Kerala 673016
                       </p>
                     </div>
                   </CardContent>
@@ -109,8 +110,8 @@ export default function Contact() {
                     <div>
                       <h3 className="font-semibold mb-1">Email Us</h3>
                       <p className="text-sm text-muted-foreground">
-                        hello@keralaeconomicforum.org<br />
-                        support@keralaeconomicforum.org
+                        inquiry@keralaeconomicforum.com<br />
+                        membership@keralaeconomicforum.com
                       </p>
                     </div>
                   </CardContent>
@@ -246,7 +247,7 @@ export default function Contact() {
                     Interactive map would be displayed here
                   </p>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Technopark, Thiruvananthapuram, Kerala
+                    Venture Arcade, Mavoor Rd, Kozhikode, Kerala
                   </p>
                 </div>
               </div>

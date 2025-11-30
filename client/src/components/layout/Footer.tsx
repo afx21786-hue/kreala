@@ -58,17 +58,17 @@ export default function Footer() {
               Empowering entrepreneurs, students, startups, and institutions across Kerala to drive economic transformation.
             </p>
             <div className="space-y-3 text-sm text-background/70">
-              <div className="flex items-center gap-3">
-                <MapPin className="w-4 h-4 text-kef-teal" />
-                <span>Technopark, Thiruvananthapuram, Kerala</span>
+              <div className="flex items-start gap-3">
+                <MapPin className="w-4 h-4 text-kef-teal shrink-0 mt-1" />
+                <span>Level 3, Venture Arcade, Mavoor Rd, above Croma, Thondayad, Kozhikode, Kerala 673016</span>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-kef-gold" />
-                <span>+91 471 123 4567</span>
+                <span>+91 XXXXX XXXXX</span>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-kef-red" />
-                <span>hello@keralaeconomicforum.org</span>
+                <span>inquiry@keralaeconomicforum.com</span>
               </div>
             </div>
           </div>
