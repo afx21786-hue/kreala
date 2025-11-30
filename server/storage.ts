@@ -108,7 +108,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUserAdminStatus(id: string, isAdmin: boolean): Promise<User | undefined> {
-    const [updated] = await db.update(users).set({ isAdmin }).where(eq(users.id, id)).returning();
+    const updateData: any = { isAdmin };
+    if (!isAdmin) {
+      updateData.adminRemovedAt = new Date();
+    }
+    const [updated] = await db.update(users).set(updateData).where(eq(users.id, id)).returning();
     return updated;
   }
 

@@ -228,7 +228,7 @@ export async function registerRoutes(
         return res.status(500).json({ error: "Failed to persist admin removal" });
       }
 
-      console.log(`[Admin Removal] SUCCESS: Admin privileges removed from ${targetUser.email}. isAdmin is now ${updatedUser.isAdmin}`);
+      console.log(`[Admin Removal] SUCCESS: Admin privileges PERMANENTLY removed from ${targetUser.email}. isAdmin is now ${updatedUser.isAdmin}. adminRemovedAt: ${updatedUser.adminRemovedAt}. This user can NEVER be admin again.`);
       
       const { password: _, ...userWithoutPassword } = updatedUser;
       res.json({ user: userWithoutPassword, message: "Admin privileges removed successfully" });

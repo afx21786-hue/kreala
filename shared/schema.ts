@@ -11,6 +11,7 @@ export const users = pgTable("users", {
   name: text("name"),
   signupOrder: integer("signup_order").notNull(),
   isAdmin: boolean("is_admin").notNull().default(false),
+  adminRemovedAt: timestamp("admin_removed_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
