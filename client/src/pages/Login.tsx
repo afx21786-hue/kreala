@@ -1,21 +1,17 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
-import { useAuth } from '../hooks/useAuth';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
-import { Separator } from '../components/ui/separator';
 import { useToast } from '../hooks/use-toast';
 import { KEFLogo } from '../components/KEFLogo';
-import { SiGoogle } from 'react-icons/si';
+import { apiRequest } from '../lib/queryClient';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const { signIn, signInWithGoogle } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
@@ -32,21 +28,33 @@ export default function Login() {
     }
 
     setLoading(true);
-    const { error } = await signIn(email, password);
-    setLoading(false);
-
-    if (error) {
-      toast({
-        title: "Login Failed",
-        description: error.message || "Invalid email or password",
-        variant: "destructive",
+    try {
+      const response = await apiRequest('POST', '/api/auth/login', {
+        email,
+        password,
       });
-    } else {
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+      
+      localStorage.setItem('kef_user', JSON.stringify(data.user));
+      
       toast({
         title: "Welcome back!",
         description: "You have successfully logged in.",
       });
       setLocation('/dashboard');
+    } catch (error: any) {
+      toast({
+        title: "Login Failed",
+        description: error.message || "Invalid email or password",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -90,8 +98,8 @@ export default function Login() {
           <CardFooter className="flex flex-col space-y-4">
             <Button 
               type="submit" 
-              className="w-full bg-[#E46E6E] hover:bg-[#d55b5b]"
-              disabled={loading || googleLoading}
+              className="w-full"
+              disabled={loading}
               data-testid="button-login"
             >
               {loading ? 'Signing in...' : 'Login'}
@@ -100,37 +108,7 @@ export default function Login() {
         </form>
         
         <div className="px-6 pb-6">
-          <div className="relative my-4">
-            <Separator />
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-xs text-muted-foreground">
-              OR
-            </span>
-          </div>
-          
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full gap-2"
-            disabled={loading || googleLoading}
-            onClick={async () => {
-              setGoogleLoading(true);
-              const { error } = await signInWithGoogle();
-              if (error) {
-                toast({
-                  title: "Google Login Failed",
-                  description: error.message || "Could not sign in with Google",
-                  variant: "destructive",
-                });
-                setGoogleLoading(false);
-              }
-            }}
-            data-testid="button-google-login"
-          >
-            <SiGoogle className="w-4 h-4" />
-            {googleLoading ? 'Redirecting...' : 'Continue with Google'}
-          </Button>
-          
-          <p className="text-sm text-center text-muted-foreground mt-4">
+          <p className="text-sm text-center text-muted-foreground">
             Don't have an account?{' '}
             <Link href="/signup" className="text-[#6EC9C6] hover:underline font-medium">
               Sign up

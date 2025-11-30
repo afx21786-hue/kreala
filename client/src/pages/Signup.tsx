@@ -1,30 +1,27 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
-import { useAuth } from '../hooks/useAuth';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
-import { Separator } from '../components/ui/separator';
 import { useToast } from '../hooks/use-toast';
 import { KEFLogo } from '../components/KEFLogo';
-import { SiGoogle } from 'react-icons/si';
+import { apiRequest } from '../lib/queryClient';
 
 export default function Signup() {
   const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const { signUp, signInWithGoogle } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!name || !email || !password) {
+    if (!name || !username || !email || !password) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
@@ -52,21 +49,37 @@ export default function Signup() {
     }
 
     setLoading(true);
-    const { error } = await signUp(email, password, name);
-    setLoading(false);
-
-    if (error) {
+    try {
+      const response = await apiRequest('POST', '/api/auth/register', {
+        username,
+        email,
+        password,
+        name,
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Registration failed');
+      }
+      
+      localStorage.setItem('kef_user', JSON.stringify(data.user));
+      
+      toast({
+        title: "Welcome to KEF!",
+        description: data.user.isAdmin 
+          ? "You are one of the first 4 members - you have admin access!" 
+          : "Your account has been created successfully.",
+      });
+      setLocation('/dashboard');
+    } catch (error: any) {
       toast({
         title: "Signup Failed",
         description: error.message || "An error occurred during signup",
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Success!",
-        description: "Please check your email to confirm your account, then login.",
-      });
-      setLocation('/login');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,6 +110,18 @@ export default function Signup() {
               />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                type="text"
+                placeholder="johndoe"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                data-testid="input-username"
+              />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -117,6 +142,7 @@ export default function Signup() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                data-testid="input-password"
               />
             </div>
             <div className="space-y-2">
@@ -128,14 +154,15 @@ export default function Signup() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
+                data-testid="input-confirm-password"
               />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button 
               type="submit" 
-              className="w-full bg-[#E46E6E] hover:bg-[#d55b5b]"
-              disabled={loading || googleLoading}
+              className="w-full"
+              disabled={loading}
               data-testid="button-signup"
             >
               {loading ? 'Creating Account...' : 'Sign Up'}
@@ -144,37 +171,7 @@ export default function Signup() {
         </form>
         
         <div className="px-6 pb-6">
-          <div className="relative my-4">
-            <Separator />
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-xs text-muted-foreground">
-              OR
-            </span>
-          </div>
-          
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full gap-2"
-            disabled={loading || googleLoading}
-            onClick={async () => {
-              setGoogleLoading(true);
-              const { error } = await signInWithGoogle();
-              if (error) {
-                toast({
-                  title: "Google Sign Up Failed",
-                  description: error.message || "Could not sign up with Google",
-                  variant: "destructive",
-                });
-                setGoogleLoading(false);
-              }
-            }}
-            data-testid="button-google-signup"
-          >
-            <SiGoogle className="w-4 h-4" />
-            {googleLoading ? 'Redirecting...' : 'Continue with Google'}
-          </Button>
-          
-          <p className="text-sm text-center text-muted-foreground mt-4">
+          <p className="text-sm text-center text-muted-foreground">
             Already have an account?{' '}
             <Link href="/login" className="text-[#6EC9C6] hover:underline font-medium">
               Login

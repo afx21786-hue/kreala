@@ -1,26 +1,58 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
-import { useAuth } from '../hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
+import { queryClient } from '../lib/queryClient';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
 import { useToast } from '../hooks/use-toast';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
-import { User, Mail, Calendar, Shield, LogOut, ArrowRight } from 'lucide-react';
+import { User, Mail, Calendar, Shield, LogOut, ArrowRight, Settings } from 'lucide-react';
+
+interface LocalUser {
+  id: string;
+  username: string;
+  email: string;
+  name: string | null;
+  signupOrder: number;
+  isAdmin: boolean;
+  createdAt: string;
+}
 
 export default function Dashboard() {
-  const { user, loading, signOut } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
+  const { data, isLoading, error } = useQuery<{ user: LocalUser }>({
+    queryKey: ['/api/auth/me'],
+    retry: false,
+  });
+
   useEffect(() => {
-    if (!loading && !user) {
+    if (error) {
+      localStorage.removeItem('kef_user');
       setLocation('/login');
     }
-  }, [user, loading, setLocation]);
+  }, [error, setLocation]);
+
+  useEffect(() => {
+    if (data?.user) {
+      localStorage.setItem('kef_user', JSON.stringify(data.user));
+    }
+  }, [data]);
+
+  const user = data?.user || null;
+  const loading = isLoading;
 
   const handleLogout = async () => {
-    await signOut();
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+    localStorage.removeItem('kef_user');
+    queryClient.clear();
     toast({
       title: "Logged out",
       description: "You have been successfully logged out.",
@@ -31,7 +63,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#E46E6E]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -41,22 +73,30 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <main className="pt-24 pb-16 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Welcome{user.user_metadata?.full_name ? `, ${user.user_metadata.full_name}` : ''}!
-            </h1>
-            <p className="text-gray-600 mt-2">Manage your Kerala Economic Forum membership and access exclusive resources.</p>
+          <div className="mb-8 flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h1 className="text-3xl font-bold" data-testid="text-welcome">
+                Welcome{user.name ? `, ${user.name}` : ''}!
+              </h1>
+              <p className="text-muted-foreground mt-2">Manage your Kerala Economic Forum membership and access exclusive resources.</p>
+            </div>
+            {user.isAdmin && (
+              <Button onClick={() => setLocation('/admin')} className="gap-2" data-testid="button-admin-panel">
+                <Settings className="h-4 w-4" />
+                Admin Panel
+              </Button>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <Card className="border-0 shadow-lg">
-              <CardHeader className="flex flex-row items-center space-x-4">
-                <div className="p-3 bg-[#E46E6E]/10 rounded-full">
-                  <User className="h-6 w-6 text-[#E46E6E]" />
+            <Card data-testid="card-profile">
+              <CardHeader className="flex flex-row items-center gap-4 space-y-0">
+                <div className="p-3 bg-primary/10 rounded-full">
+                  <User className="h-6 w-6 text-primary" />
                 </div>
                 <div>
                   <CardTitle className="text-lg">Profile</CardTitle>
@@ -65,28 +105,28 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {user.user_metadata?.full_name && (
-                    <div className="flex items-center text-sm text-gray-600">
+                  {user.name && (
+                    <div className="flex items-center text-sm text-muted-foreground">
                       <User className="h-4 w-4 mr-2" />
-                      {user.user_metadata.full_name}
+                      {user.name}
                     </div>
                   )}
-                  <div className="flex items-center text-sm text-gray-600">
+                  <div className="flex items-center text-sm text-muted-foreground">
                     <Mail className="h-4 w-4 mr-2" />
                     {user.email}
                   </div>
-                  <div className="flex items-center text-sm text-gray-600">
+                  <div className="flex items-center text-sm text-muted-foreground">
                     <Calendar className="h-4 w-4 mr-2" />
-                    Member since {new Date(user.created_at).toLocaleDateString()}
+                    Member since {new Date(user.createdAt).toLocaleDateString()}
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg">
-              <CardHeader className="flex flex-row items-center space-x-4">
-                <div className="p-3 bg-[#6EC9C6]/10 rounded-full">
-                  <Shield className="h-6 w-6 text-[#6EC9C6]" />
+            <Card data-testid="card-membership">
+              <CardHeader className="flex flex-row items-center gap-4 space-y-0">
+                <div className="p-3 bg-kef-teal/10 rounded-full">
+                  <Shield className="h-6 w-6 text-kef-teal" />
                 </div>
                 <div>
                   <CardTitle className="text-lg">Membership</CardTitle>
@@ -95,9 +135,14 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <span className="inline-block px-3 py-1 bg-[#E7D26A]/20 text-[#b5a44d] rounded-full text-sm font-medium">
-                    Free Member
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {user.isAdmin ? (
+                      <Badge variant="default">Admin Member</Badge>
+                    ) : (
+                      <Badge variant="secondary">Free Member</Badge>
+                    )}
+                    <span className="text-xs text-muted-foreground">#{user.signupOrder}</span>
+                  </div>
                   <Button variant="outline" size="sm" className="w-full" onClick={() => setLocation('/membership')}>
                     Upgrade Plan <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
@@ -105,10 +150,10 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg">
-              <CardHeader className="flex flex-row items-center space-x-4">
-                <div className="p-3 bg-[#E7D26A]/10 rounded-full">
-                  <Calendar className="h-6 w-6 text-[#c4b44a]" />
+            <Card data-testid="card-events">
+              <CardHeader className="flex flex-row items-center gap-4 space-y-0">
+                <div className="p-3 bg-kef-gold/10 rounded-full">
+                  <Calendar className="h-6 w-6 text-kef-gold" />
                 </div>
                 <div>
                   <CardTitle className="text-lg">Upcoming Events</CardTitle>
@@ -116,7 +161,7 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-gray-600 mb-3">No upcoming events registered.</p>
+                <p className="text-sm text-muted-foreground mb-3">No upcoming events registered.</p>
                 <Button variant="outline" size="sm" className="w-full" onClick={() => setLocation('/events')}>
                   Browse Events <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
@@ -124,27 +169,27 @@ export default function Dashboard() {
             </Card>
           </div>
 
-          <Card className="border-0 shadow-lg">
+          <Card data-testid="card-quick-actions">
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
               <CardDescription>Access your most-used features</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Button variant="outline" className="h-auto py-4 flex flex-col" onClick={() => setLocation('/programs')}>
-                  <span className="text-2xl mb-2">📚</span>
+                <Button variant="outline" className="h-auto py-4 flex flex-col" onClick={() => setLocation('/programs')} data-testid="button-programs">
+                  <ArrowRight className="h-6 w-6 mb-2" />
                   <span>Programs</span>
                 </Button>
-                <Button variant="outline" className="h-auto py-4 flex flex-col" onClick={() => setLocation('/resources')}>
-                  <span className="text-2xl mb-2">📁</span>
+                <Button variant="outline" className="h-auto py-4 flex flex-col" onClick={() => setLocation('/resources')} data-testid="button-resources">
+                  <ArrowRight className="h-6 w-6 mb-2" />
                   <span>Resources</span>
                 </Button>
-                <Button variant="outline" className="h-auto py-4 flex flex-col" onClick={() => setLocation('/startup-support')}>
-                  <span className="text-2xl mb-2">🚀</span>
+                <Button variant="outline" className="h-auto py-4 flex flex-col" onClick={() => setLocation('/startup-support')} data-testid="button-startup">
+                  <ArrowRight className="h-6 w-6 mb-2" />
                   <span>Startup Support</span>
                 </Button>
-                <Button variant="outline" className="h-auto py-4 flex flex-col" onClick={() => setLocation('/contact')}>
-                  <span className="text-2xl mb-2">💬</span>
+                <Button variant="outline" className="h-auto py-4 flex flex-col" onClick={() => setLocation('/contact')} data-testid="button-contact">
+                  <ArrowRight className="h-6 w-6 mb-2" />
                   <span>Contact Us</span>
                 </Button>
               </div>
@@ -155,7 +200,8 @@ export default function Dashboard() {
             <Button 
               variant="outline" 
               onClick={handleLogout}
-              className="text-red-600 border-red-200 hover:bg-red-50"
+              className="text-destructive"
+              data-testid="button-logout"
             >
               <LogOut className="h-4 w-4 mr-2" />
               Logout

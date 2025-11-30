@@ -1,11 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Play } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import heroImage from "@assets/generated_images/kerala_modern_cityscape_hero.png";
+import introVideo from "@assets/Create_a_cinematic_202511301644_hd88l_1764501532239.mp4";
 
 export default function HeroSection() {
   const [isVisible, setIsVisible] = useState(false);
+  const [videoOpen, setVideoOpen] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const [, navigate] = useLocation();
 
@@ -89,6 +97,16 @@ export default function HeroSection() {
             >
               Partner With Us
             </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="gap-2 bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+              onClick={() => setVideoOpen(true)}
+              data-testid="button-hero-watch-video"
+            >
+              <Play className="w-4 h-4" />
+              Watch Video
+            </Button>
           </div>
 
           <p
@@ -108,6 +126,25 @@ export default function HeroSection() {
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
+
+      <Dialog open={videoOpen} onOpenChange={setVideoOpen}>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden">
+          <DialogHeader className="p-4 pb-0">
+            <DialogTitle>Kerala Economic Forum</DialogTitle>
+          </DialogHeader>
+          <div className="aspect-video w-full">
+            <video
+              src={introVideo}
+              controls
+              autoPlay
+              className="w-full h-full object-cover"
+              data-testid="video-intro"
+            >
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
