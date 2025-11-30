@@ -1,0 +1,201 @@
+Create a Premium, Modern, Animated Website for Kerala Economic Forum (KEF)
+
+Prompt:
+Design a modern, premium, high-end, ultra-clean website UI/UX for Kerala Economic Forum (KEF) — a statewide non-profit empowering entrepreneurs, students, startups, and institutions in Kerala.
+
+Use the brand colors inspired by the logo:
+
+Soft Red (#E46E6E)
+
+Yellow/Gold (#E7D26A)
+
+Aqua/Teal (#6EC9C6)
+
+Dark Charcoal / Black for typography
+
+Clean white backgrounds
+
+Soft gradients based on the 3-circle palette
+
+Subtle glassmorphism & blurred layers
+
+Overall Style:
+
+Premium, futuristic, startup-style UI
+
+Young, energetic, bold
+
+Google 2025 design language + Apple website minimalism
+
+Smooth animations, micro-interactions, scroll reveals
+
+Elegant motion transitions
+
+Floating elements, parallax layers, modern iconography
+
+Rounded edges, soft shadows, plenty of whitespace
+
+Website Structure (10 Pages):
+Use the FULL content provided in the blueprint below and convert it into a beautiful, modern, animated web experience.
+
+🔥 PAGE 1 — HOME PAGE (Hero + All Sections)
+
+Hero with large bold typography
+
+Animated overlapping circles (matching logo concept)
+
+Smooth fade-ins + sliding transitions
+
+Interactive metrics counter
+
+Floating cards for signature programs
+
+Premium events slider with animations
+
+Clean partner grid with hover glow effect
+
+🔥 PAGE 2 — ABOUT US
+
+Warm storytelling layout
+
+Side-by-side animations
+
+Leadership team cards with smooth hover effects
+
+Soft gradient section backgrounds
+
+🔥 PAGE 3 — PROGRAMS
+
+Modular cards
+
+Motion on scroll
+
+Iconography with subtle neon glow in KEF brand colors
+
+Vertical timeline for “Startup Boot Camp” content
+
+🔥 PAGE 4 — STARTUP SUPPORT
+
+Professional, business-grade design
+
+Icons + collapsible sections
+
+Editable “downloadable resources” blocks
+
+Premium accelerator-style layout
+
+🔥 PAGE 5 — CAMPUS INITIATIVES
+
+Vibrant, youthful look
+
+Animated sticky headers
+
+College-friendly color accents
+
+Illustrated workshops grid
+
+🔥 PAGE 6 — EVENTS
+
+Event cards with hover zoom and soft animations
+
+Sort & filter UI
+
+Gallery with modern transitions
+
+🔥 PAGE 7 — MEMBERSHIP
+
+Multi-tier membership pricing layout
+
+Clean, elegant membership cards
+
+Highlight the most popular plan
+
+🔥 PAGE 8 — RESOURCES
+
+Blog-style article layout
+
+Download cards with icons
+
+Annual report section with glassmorphism
+
+🔥 PAGE 9 — PARTNERS
+
+Grid + scrolling marquee
+
+Hover glow effects
+
+Partner call-to-action banner
+
+🔥 PAGE 10 — CONTACT
+
+Minimal contact form
+
+Map + clean layout
+
+Bold typography and clear CTA
+
+✨ Animations & Transitions Required
+
+Use:
+
+GSAP scroll animations
+
+Parallax hero images
+
+Smooth fade-in
+
+Acrylic/glassmorphism sections
+
+On-hover micro-interactions
+
+Card lift effects
+
+Soft gradients transitioning section-to-section
+
+🎨 Design Elements To Include
+
+Gradient overlays inspired by logo circles
+
+Light 3D floating shapes
+
+Animated icons
+
+Startup-style illustrations
+
+Clean sans-serif fonts (Poppins / Inter / Plus Jakarta Sans)
+
+Warm lighting + soft shadows
+
+📌 Final Deliverable Requirements
+
+Produce:
+
+A fully designed multi-page UI
+
+Clean responsive layouts
+
+Desktop + Mobile versions
+
+Animation-ready structure
+
+Premium finish with unique visual identity
+
+Color system based on KEF logo
+
+Component library (buttons, cards, badges, icons, grids, hero sections, form UI)
+
+🎯 Goal of the Website
+
+Create a premium, modern, startup-centric website that communicates:
+
+Innovation
+
+Entrepreneurship
+
+Community
+
+Youth empowerment
+
+Professionalism
+
+Kerala’s economic transformation
