@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -77,6 +77,32 @@ const benefits = [
 
 export default function Membership() {
   const [isYearly, setIsYearly] = useState(true);
+  const [visibleCards, setVisibleCards] = useState<number[]>([]);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = parseInt(entry.target.getAttribute("data-index") || "0");
+            setVisibleCards((prev) => {
+              if (!prev.includes(index)) {
+                return [...prev, index];
+              }
+              return prev;
+            });
+          }
+        });
+      },
+      { threshold: 0.2, rootMargin: "0px 0px -50px 0px" }
+    );
+
+    const cards = sectionRef.current?.querySelectorAll("[data-index]");
+    cards?.forEach((card) => observer.observe(card));
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -121,16 +147,21 @@ export default function Membership() {
           </div>
         </section>
 
-        <section className="py-16">
+        <section className="py-16" ref={sectionRef}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid md:grid-cols-3 gap-8">
               {plans.map((plan, index) => (
                 <Card
                   key={plan.id}
-                  className={`relative border-0 shadow-md hover-elevate animate-fade-in ${
+                  data-index={index}
+                  className={`relative border-0 shadow-md card-hover-lift group transition-all duration-600 ease-out ${
                     plan.popular ? "ring-2 ring-primary" : ""
+                  } ${
+                    visibleCards.includes(index)
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-8"
                   }`}
-                  style={{ animationDelay: `${index * 100}ms` }}
+                  style={{ transitionDelay: `${index * 100}ms` }}
                   data-testid={`card-plan-${plan.id}`}
                 >
                   {plan.popular && (
@@ -139,12 +170,12 @@ export default function Membership() {
                     </Badge>
                   )}
                   <CardHeader className="text-center pb-4">
-                    <div className={`w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center ${
+                    <div className={`w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center transition-transform duration-300 group-hover:scale-110 ${
                       plan.popular ? "bg-primary text-primary-foreground" : "bg-muted"
                     }`}>
                       <plan.icon className="w-7 h-7" />
                     </div>
-                    <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                    <CardTitle className="text-2xl group-hover:text-primary transition-colors">{plan.name}</CardTitle>
                     <CardDescription>{plan.description}</CardDescription>
                   </CardHeader>
                   <CardContent>

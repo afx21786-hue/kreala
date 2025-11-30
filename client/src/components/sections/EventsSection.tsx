@@ -98,8 +98,8 @@ export default function EventsSection() {
         <div className="grid lg:grid-cols-2 gap-8">
           {featuredEvent && (
             <Card
-              className={`overflow-visible border-0 shadow-md hover-elevate transition-all duration-700 ${
-                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              className={`group overflow-visible border-0 shadow-md card-hover-lift transition-all duration-700 ${
+                isVisible ? "opacity-100 translate-y-0 translate-x-0" : "opacity-0 -translate-x-10"
               }`}
               data-testid={`card-event-featured-${featuredEvent.id}`}
             >
@@ -145,14 +145,14 @@ export default function EventsSection() {
             {otherEvents.map((event, index) => (
               <Card
                 key={event.id}
-                className={`hover-elevate border-0 shadow-sm transition-all duration-500 ${
-                  isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
+                className={`group card-hover-lift border-0 shadow-sm transition-all duration-700 ${
+                  isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"
                 }`}
                 style={{ transitionDelay: `${(index + 1) * 150}ms` }}
                 data-testid={`card-event-${event.id}`}
               >
                 <CardContent className="p-4 flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-md bg-gradient-to-br from-kef-teal/20 to-kef-gold/20 flex flex-col items-center justify-center shrink-0">
+                  <div className="w-16 h-16 rounded-md bg-gradient-to-br from-kef-teal/20 to-kef-gold/20 flex flex-col items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
                     <span className="text-2xl font-bold text-foreground">
                       {event.date.split(" ")[1]?.replace(",", "")}
                     </span>
@@ -166,7 +166,7 @@ export default function EventsSection() {
                         {event.category}
                       </Badge>
                     </div>
-                    <h4 className="font-semibold truncate">{event.title}</h4>
+                    <h4 className="font-semibold truncate group-hover:text-primary transition-colors">{event.title}</h4>
                     <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
                       <span className="flex items-center gap-1">
                         <MapPin className="w-3 h-3" />

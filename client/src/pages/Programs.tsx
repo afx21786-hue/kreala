@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -127,10 +127,36 @@ const categories = ["All", "Startups", "Funding", "Education", "Resources", "Gro
 export default function Programs() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedProgram, setSelectedProgram] = useState(programs[0]);
+  const [visibleCards, setVisibleCards] = useState<number[]>([]);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const filteredPrograms = selectedCategory === "All"
     ? programs
     : programs.filter(p => p.category === selectedCategory);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = parseInt(entry.target.getAttribute("data-index") || "0");
+            setVisibleCards((prev) => {
+              if (!prev.includes(index)) {
+                return [...prev, index];
+              }
+              return prev;
+            });
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -50px 0px" }
+    );
+
+    const cards = gridRef.current?.querySelectorAll("[data-index]");
+    cards?.forEach((card) => observer.observe(card));
+
+    return () => observer.disconnect();
+  }, [filteredPrograms]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -179,20 +205,25 @@ export default function Programs() {
               </div>
 
               <TabsContent value="grid">
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div ref={gridRef} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredPrograms.map((program, index) => (
                     <Card
                       key={program.id}
-                      className="border-0 shadow-sm hover-elevate group animate-fade-in"
-                      style={{ animationDelay: `${index * 100}ms` }}
+                      data-index={index}
+                      className={`border-0 shadow-sm card-hover-lift group transition-all duration-600 ease-out ${
+                        visibleCards.includes(index)
+                          ? "opacity-100 translate-y-0"
+                          : "opacity-0 translate-y-8"
+                      }`}
+                      style={{ transitionDelay: `${index * 80}ms` }}
                       data-testid={`card-program-${program.id}`}
                     >
                       <CardContent className="p-6">
-                        <div className={`w-12 h-12 rounded-md bg-${program.color}/10 flex items-center justify-center mb-4 transition-transform group-hover:scale-110`}>
+                        <div className={`w-12 h-12 rounded-md bg-${program.color}/10 flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3`}>
                           <program.icon className={`w-6 h-6 text-${program.color}`} />
                         </div>
                         <Badge variant="secondary" className="mb-2">{program.category}</Badge>
-                        <h3 className="text-xl font-semibold mb-1">{program.title}</h3>
+                        <h3 className="text-xl font-semibold mb-1 group-hover:text-primary transition-colors">{program.title}</h3>
                         <p className="text-sm text-primary mb-3">{program.subtitle}</p>
                         <p className="text-muted-foreground text-sm mb-4">{program.description}</p>
                         <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
@@ -221,18 +252,18 @@ export default function Programs() {
                     {filteredPrograms.map((program) => (
                       <Card
                         key={program.id}
-                        className={`cursor-pointer transition-all hover-elevate ${
+                        className={`cursor-pointer transition-all card-hover-lift group ${
                           selectedProgram.id === program.id ? "ring-2 ring-primary" : ""
                         }`}
                         onClick={() => setSelectedProgram(program)}
                         data-testid={`select-program-${program.id}`}
                       >
                         <CardContent className="p-4 flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-md bg-${program.color}/10 flex items-center justify-center shrink-0`}>
+                          <div className={`w-10 h-10 rounded-md bg-${program.color}/10 flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110`}>
                             <program.icon className={`w-5 h-5 text-${program.color}`} />
                           </div>
                           <div>
-                            <h4 className="font-semibold">{program.title}</h4>
+                            <h4 className="font-semibold group-hover:text-primary transition-colors">{program.title}</h4>
                             <p className="text-xs text-muted-foreground">{program.category}</p>
                           </div>
                         </CardContent>

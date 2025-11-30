@@ -67,7 +67,7 @@ export default function PartnersSection() {
             {[...partners, ...partners].map((partner, index) => (
               <div
                 key={`${partner.name}-${index}`}
-                className="flex-shrink-0 w-40 h-24 rounded-md bg-card border border-border flex items-center justify-center hover-elevate transition-all group"
+                className="flex-shrink-0 w-40 h-24 rounded-md bg-card border border-border flex items-center justify-center card-hover-lift group cursor-pointer"
                 data-testid={`partner-logo-${partner.name.toLowerCase()}-${index}`}
               >
                 <div className="text-center">

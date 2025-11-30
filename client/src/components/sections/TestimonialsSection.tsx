@@ -75,19 +75,21 @@ export default function TestimonialsSection() {
           {testimonials.map((testimonial, index) => (
             <Card
               key={testimonial.id}
-              className={`border-0 shadow-sm hover-elevate transition-all duration-500 ${
-                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              className={`group border-0 shadow-sm card-hover-lift transition-all duration-600 ease-out ${
+                isVisible 
+                  ? "opacity-100 translate-y-0" 
+                  : "opacity-0 translate-y-8"
               }`}
-              style={{ transitionDelay: `${index * 150}ms` }}
+              style={{ transitionDelay: `${index * 120}ms` }}
               data-testid={`card-testimonial-${testimonial.id}`}
             >
               <CardContent className="p-6">
-                <Quote className="w-10 h-10 text-primary/20 mb-4" />
+                <Quote className="w-10 h-10 text-primary/20 mb-4 transition-transform duration-300 group-hover:scale-110" />
                 <p className="text-foreground/80 mb-6 leading-relaxed">
                   "{testimonial.content}"
                 </p>
                 <div className="flex items-center gap-3">
-                  <Avatar>
+                  <Avatar className="transition-transform duration-300 group-hover:scale-110">
                     <AvatarFallback className="bg-gradient-to-br from-kef-teal to-kef-gold text-white font-semibold">
                       {testimonial.initials}
                     </AvatarFallback>

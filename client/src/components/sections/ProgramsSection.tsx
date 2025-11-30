@@ -105,19 +105,21 @@ export default function ProgramsSection() {
             <Card
               key={program.title}
               data-index={index}
-              className={`group hover-elevate border-0 shadow-sm transition-all duration-500 ${
-                visibleCards.includes(index) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              className={`group border-0 shadow-sm card-hover-lift transition-all duration-600 ease-out ${
+                visibleCards.includes(index) 
+                  ? "opacity-100 translate-y-0" 
+                  : "opacity-0 translate-y-8"
               }`}
-              style={{ transitionDelay: `${index * 100}ms` }}
+              style={{ transitionDelay: `${index * 80}ms` }}
               data-testid={`card-program-${program.title.toLowerCase().replace(/\s/g, "-")}`}
             >
               <CardContent className="p-6">
                 <div
-                  className={`w-12 h-12 rounded-md ${program.bgColor} flex items-center justify-center mb-4 transition-transform group-hover:scale-110`}
+                  className={`w-12 h-12 rounded-md ${program.bgColor} flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3`}
                 >
                   <program.icon className={`w-6 h-6 ${program.textColor}`} />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{program.title}</h3>
+                <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">{program.title}</h3>
                 <p className="text-muted-foreground text-sm mb-4">{program.description}</p>
                 <Button variant="ghost" size="sm" className="gap-1 p-0 h-auto group/btn">
                   Learn More
