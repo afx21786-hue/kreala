@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from '../hooks/use-toast';
 import { KEFLogo } from '../components/KEFLogo';
 import { apiRequest } from '../lib/queryClient';
+import { supabase } from '../lib/supabaseClient';
 import { Chrome } from 'lucide-react';
 
 export default function Signup() {
@@ -30,6 +31,27 @@ export default function Signup() {
       });
     }
   }, [toast]);
+
+  const handleGoogleSignup = async () => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin + '/dashboard',
+        }
+      });
+      
+      if (error) throw error;
+    } catch (error: any) {
+      toast({
+        title: "Google Sign-up Failed",
+        description: error.message || "An error occurred during Google sign-up",
+        variant: "destructive",
+      });
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -194,11 +216,12 @@ export default function Signup() {
               type="button"
               variant="outline"
               className="w-full gap-2"
-              onClick={() => window.location.href = '/api/auth/google'}
+              onClick={handleGoogleSignup}
+              disabled={loading}
               data-testid="button-google-signup"
             >
               <Chrome className="w-4 h-4" />
-              Sign up with Google
+              {loading ? 'Signing up...' : 'Sign up with Google'}
             </Button>
           </CardFooter>
         </form>
