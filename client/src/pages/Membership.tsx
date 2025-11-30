@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useLocation } from "wouter";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -81,24 +82,10 @@ export default function Membership() {
   const [visibleCards, setVisibleCards] = useState<number[]>([]);
   const sectionRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const handleSelectPlan = (planName: string, planId: string) => {
-    if (planId === "starter") {
-      toast({
-        title: "Welcome to KEF!",
-        description: "Your free membership is now active. Explore our community and get started with KEF.",
-      });
-    } else if (planId === "professional") {
-      toast({
-        title: "Upgrade Initiated",
-        description: `Let's get you started with the ${planName} plan. Complete your payment to unlock all benefits.`,
-      });
-    } else if (planId === "enterprise") {
-      toast({
-        title: "Sales Team Alert",
-        description: `Our enterprise team will contact you within 24 hours to discuss the ${planName} plan and custom solutions.`,
-      });
-    }
+    setLocation("/signup");
   };
 
   useEffect(() => {

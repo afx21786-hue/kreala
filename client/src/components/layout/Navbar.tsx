@@ -134,12 +134,12 @@ export default function Navbar() {
                 </DropdownMenu>
               ) : (
                 <>
-                  <Link href="/login">
-                    <Button variant="outline" size="sm" data-testid="button-login">
-                      Login
+                  <Link href="/membership">
+                    <Button variant="outline" size="sm" data-testid="button-get-started">
+                      Get Started
                     </Button>
                   </Link>
-                  <Link href="/signup">
+                  <Link href="/membership">
                     <Button size="sm" data-testid="button-join">
                       Join KEF
                     </Button>
@@ -196,12 +196,12 @@ export default function Navbar() {
                       </>
                     ) : (
                       <>
-                        <Link href="/login" onClick={() => setIsOpen(false)}>
-                          <Button variant="outline" className="w-full" data-testid="mobile-button-login">
-                            Login
+                        <Link href="/membership" onClick={() => setIsOpen(false)}>
+                          <Button variant="outline" className="w-full" data-testid="mobile-button-get-started">
+                            Get Started
                           </Button>
                         </Link>
-                        <Link href="/signup" onClick={() => setIsOpen(false)}>
+                        <Link href="/membership" onClick={() => setIsOpen(false)}>
                           <Button className="w-full" data-testid="mobile-button-join">
                             Join KEF
                           </Button>
