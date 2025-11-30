@@ -1,10 +1,11 @@
+import { useEffect, useState, useRef } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { CardContent } from "@/components/ui/card";
 import { AnimatedCard, useScrollAnimation } from "@/components/ui/animated-card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Target, Eye, Heart, Users, Award, Lightbulb, ArrowRight } from "lucide-react";
+import { Target, Eye, Heart, Users, Award, Lightbulb, ArrowRight, Quote } from "lucide-react";
 import aboutImage from "@assets/generated_images/startup_workspace_team_collaboration.png";
 
 const leadership = [
@@ -42,35 +43,64 @@ const values = [
 ];
 
 function TeamSection() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
   const { ref, isVisible } = useScrollAnimation();
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!isVisible) return;
+    
+    intervalRef.current = setInterval(() => {
+      setIsAnimating(true);
+      setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % leadership.length);
+        setIsAnimating(false);
+      }, 500);
+    }, 5000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isVisible]);
+
+  const currentMember = leadership[currentIndex];
 
   return (
     <div 
       ref={ref}
       className={`transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
     >
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {leadership.map((member, index) => (
-          <div 
-            key={member.name}
-            className="flex flex-col items-center text-center"
-            style={{ animationDelay: `${index * 100}ms` }}
+      <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+        <div className="relative order-2 md:order-1">
+          <Quote className="absolute -top-2 -left-2 w-10 h-10 text-kef-gold/30" />
+          <blockquote 
+            className={`text-lg md:text-xl text-muted-foreground italic leading-relaxed pl-8 transition-all duration-500 ${isAnimating ? "opacity-0 -translate-x-4" : "opacity-100 translate-x-0"}`}
           >
-            <div className="relative mb-4">
-              <div className="absolute -inset-3 bg-gradient-to-br from-kef-teal/20 via-kef-gold/20 to-kef-red/20 rounded-full blur-lg" />
-              <Avatar className="w-28 h-28 relative border-4 border-white shadow-lg">
-                <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-kef-teal via-kef-gold to-kef-red text-white">
-                  {member.initials}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-            <h3 className="text-lg font-bold">{member.name}</h3>
-            <p className="text-kef-teal font-medium text-sm mb-3">{member.role}</p>
-            <p className="text-sm text-muted-foreground italic leading-relaxed">
-              "{member.quote}"
-            </p>
+            "{currentMember.quote}"
+          </blockquote>
+          <div 
+            className={`mt-6 pl-8 transition-all duration-500 ${isAnimating ? "opacity-0" : "opacity-100"}`}
+          >
+            <h3 className="text-xl font-bold">{currentMember.name}</h3>
+            <p className="text-kef-teal font-medium">{currentMember.role}</p>
           </div>
-        ))}
+        </div>
+
+        <div className="flex flex-col items-center order-1 md:order-2">
+          <div 
+            className={`relative transition-all duration-500 ${isAnimating ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
+          >
+            <div className="absolute -inset-4 bg-gradient-to-br from-kef-teal/20 via-kef-gold/20 to-kef-red/20 rounded-full blur-xl" />
+            <Avatar className="w-40 h-40 md:w-48 md:h-48 relative border-4 border-white shadow-xl">
+              <AvatarFallback className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-kef-teal via-kef-gold to-kef-red text-white">
+                {currentMember.initials}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+        </div>
       </div>
     </div>
   );
